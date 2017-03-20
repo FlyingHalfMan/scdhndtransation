@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!--<script src="../Resources/jquery-3.1.1.min.js"/>-->
+    <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.8.0.js"></script>
+    <title>全部用户</title>
+
+    <script>
+        $(document).ready(
+         $.ajax({
+             cache: true,
+             type: "GET",
+             url:"http://localhost:8080/second/compus/admin/listusers?offset=0&limit=10",
+             data:null,
+             dataType:"json",
+             async:true,
+             error:function(XmlHttpRequest)
+             {
+                 alert("error" +XmlHttpRequest.responseText);
+             },
+             success:(function (data) {
+                 alert($.parseJSON(data));
+
+             })
+
+             })
+        );
+    </script>
+
+</head>
+<body>
+    <table border="1">
+        <thead>序号</thead>
+        <thead>用户名称</thead>
+        <thead>用户性别</thead>
+        <thead>手机</thead>
+        <thead>邮箱</thead>
+        <td id="id">1</td>
+        <td>2321</td>
+        <td>12312</td>
+        <td>12312</td>
+        <td>21312</td>
+        <td>12321</td>
+        <td><a href="#">删除</a></td>
+        </tr>
+    </table>
+
+
+</body>
+</html>
