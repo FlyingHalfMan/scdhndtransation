@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入 Bootstrap -->
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- 可选的Bootstrap主题文件（一般不使用） -->
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap-theme.min.css"></script>
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+    <link type="text/css" src="../Resources/bootstrap-3.3.0/css/bootstrap-theme.min.css" rel="stylesheet" />
+    <link type="text/css" src="../Resources/bootstrap-3.3.0/css/bootstrap.min.css" />
+
+    <script type="text/javascript">
+
+
+    </script>
+    <script>
+        function getVerifycode() {
+
+            $(document).ready(function () {
+                $.ajax({
+                    cache:true,
+                    type:"GET",
+                    url:"http://localhost:8080/second/compus/regist/verifycode",
+                    data:{"count":$("#count").val()},
+                    async:true,
+                    dataType:"text",
+                    error:function (xmlhttpRequest) {
+                        //这里对错误进行处理
+                        var error = $.parseJSON(xmlhttpRequest.responseText);
+                        alert("error" +error.msg);
+                    },
+                    success:function (statusCode) {
+                        alert(statusCode);
+                    }
+                });
+            });
+        }
+    </script>
+    <script>
+        function regist() {
+            $(document).ready(function () {
+                $.ajax({
+                    cache:true,
+                    type:"POST",
+                    url:"http://localhost:8080/second/compus/regist",
+                    data:{
+                        "count":$("#count").val(),
+                        "verifycode":$("#verifycode").val()
+                    },
+                    async:true,
+                    dataType:"text",
+                    error:function (xmlhttpRequest) {
+                        //这里对错误进行处理
+                        var error = $.parseJSON(xmlhttpRequest.responseText);
+                        alert("error" +error.msg);
+                    },
+                    success:function (statusCode) {
+                        alert(statusCode);
+                    }
+                });
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        function test() {
+            alert("heeh");
+        };
+    </script>
+</head>
+<body>
+
+    <!--注册页面需要的东西-->
+    <!--1。 账号输入框，账号可以是邮箱或者手机-->
+    <!--2。验证码输入框-->
+    <!--3。密码设置输入框-->
+    <!--4。再次输入密码。-->
+    <!--错误提示显示你可以自己决定怎么显示-->
+    <!--回来的数据在rsponse里面 ajax 的error responseText中，格式是 Error{"code":404,"msg":"发生错误了"}-->
+
+    <form>
+        <table>
+            <tr>
+                <td  colspan="2"><input type="text" id="count" name="count" placeholder="请输入手机号/邮箱号码"/></td>
+            </tr>
+            <tr>
+                <td><input type="text" id="verifycode" name="verifycode"/></td>
+                <td><button type="button" id="getverifycode" onclick="getVerifycode()" value="获取验证码">获取验证码</button></td>
+            </tr>
+            <tr><td><button type="button"  id="submit" onclick="regist()" >注册</button></td></tr>
+        </table>
+    </form>
+
+</body>
+</html>
