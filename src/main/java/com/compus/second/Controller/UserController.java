@@ -1,12 +1,16 @@
 package com.compus.second.Controller;
 
 import com.aliyuncs.exceptions.ClientException;
+import com.compus.second.Bean.CommodityBean;
 import com.compus.second.Bean.SuccessBean;
+import com.compus.second.Dao.CommodityDao;
+import com.compus.second.Dao.CommodityImageDao;
 import com.compus.second.Dao.UserDao;
 import com.compus.second.Exception.Enum.INVALID_EXCEPTION_TYPE;
 import com.compus.second.Exception.Enum.USER_EXCEPTOIN_TYPE;
 import com.compus.second.Exception.InvalidException;
 import com.compus.second.Exception.UserException;
+import com.compus.second.Table.Commodity;
 import com.compus.second.Table.User;
 import com.compus.second.Utils.EncryptUtil;
 import com.compus.second.Utils.ImageService;
@@ -26,23 +30,26 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by cai on 2017/3/18.
  */
 
 @Controller
+@RequestMapping("user")
 public class UserController extends  BaseController {
 
     @Autowired
     private UserDao userDao;
 
+    @Autowired
+    private CommodityDao commodityDao;
+    @Autowired
+    private CommodityImageDao commodityImageDao;
+
     @RequestMapping(path = "userprofile")
-    public ModelAndView goToProfilePaage() {
+    public ModelAndView goToProfilePage() {
 
         return new ModelAndView("profile",null);
     }
@@ -56,7 +63,7 @@ public class UserController extends  BaseController {
      * @throws UserException
      */
     @RequestMapping(path = "profile")
-    public ModelAndView getToUserInormationView(HttpServletRequest  request,
+    public SuccessBean getUserInormationView(HttpServletRequest  request,
                                                 HttpServletResponse response)throws UserException{
         HttpSession session = request.getSession();
         String userId = (String) session.getAttribute("userId");
@@ -65,7 +72,7 @@ public class UserController extends  BaseController {
            throw new UserException(USER_EXCEPTOIN_TYPE.USER_EXCEPTOIN_TYPE_USER_NOT_FOUND);
         Map<String,User> model = new HashMap<String, User>();
         model.put("user",user);
-        return new ModelAndView("",model);
+        return new SuccessBean(200,"信息获取成功",user,null);
     }
 
     /**
@@ -77,7 +84,7 @@ public class UserController extends  BaseController {
      */
     // 检查用户更新的名称是否有效
     @RequestMapping(path = "verify/name")
-    public ModelAndView verifyName(@RequestParam("name") final String name,
+    public SuccessBean verifyName(@RequestParam("name") final String name,
                                    HttpServletRequest request,
                                    HttpServletResponse response){
 
@@ -88,10 +95,8 @@ public class UserController extends  BaseController {
         List<User> users = userDao.findUserByUserName(name);
       if (users !=null && users.size() >=1)
           throw new InvalidException(403,"用户名已经被占用，请使用另一个用户名");
-       SuccessBean successBean =  new SuccessBean(200,"用户名可以使用");
-       Map resp = new HashMap();
-       resp.put("resp",successBean);
-      return  new ModelAndView("/profile",resp);
+
+      return new SuccessBean(200,"用户名可以使用");
 
     }
 
@@ -103,7 +108,7 @@ public class UserController extends  BaseController {
      * @return
      */
     @RequestMapping(path = "update")
-    public ModelAndView updateUser(@RequestBody final User user,
+    public SuccessBean updateUser(@RequestBody final User user,
                                    HttpServletRequest request,
                                    HttpServletResponse  response){
 
@@ -115,9 +120,7 @@ public class UserController extends  BaseController {
        user1.setBirthday(user.getBirthday());
        userDao.update(user1);
 
-       Map resp = new HashMap();
-       resp.put("resp","信息修改成功");
-       return new ModelAndView("profile",resp);
+       return new SuccessBean(200,"信息修改成功",user1,null);
     }
 
 
@@ -131,15 +134,13 @@ public class UserController extends  BaseController {
      * @throws IOException
      */
     @RequestMapping(path = "update/image")
-    public ModelAndView updateImage(@RequestParam("iamge")CommonsMultipartFile image,
+    public SuccessBean updateImage(@RequestParam("iamge")CommonsMultipartFile image,
                                     @RequestHeader("userid") final String userId) throws IOException {
         User user = userDao.findById(userId);
         String imageName = ImageService.uploadImageToImageServer(image,userId);
         user.setImage(imageName);
         userDao.update(user);
-        Map resp = new HashMap();
-        resp.put("resp",imageName);
-        return new ModelAndView("profile",resp);
+        return new SuccessBean(200,"头像更新完成",user,null);
     }
 
     /**
@@ -151,7 +152,7 @@ public class UserController extends  BaseController {
      * @throws ClientException
      */
     @RequestMapping("update/mobile/verify/{mobile}")
-    public ModelAndView verifyMobile(@PathVariable("mobile") final String mobile,
+    public SuccessBean verifyMobile(@PathVariable("mobile") final String mobile,
                                      HttpServletRequest request,
                                      HttpServletResponse response) throws ClientException {
 
@@ -168,9 +169,8 @@ public class UserController extends  BaseController {
         session.setAttribute("reset_mobile_verifycode",verifycode);
         session.setAttribute("reset_mobile_verifycode_expired_date",Utils.getTimeWithDuration(5 *60 *1000));
         SMSService.sendMobileResetVerifyCode(mobile,verifycode);
-        Map resp = new HashMap();
-        resp.put("resp","验证码已经发送到手机"+mobile);
-        return new ModelAndView("profile",resp);
+
+        return new SuccessBean(200,"验证码已经发送到手机"+mobile);
     }
 
     /**
@@ -185,7 +185,7 @@ public class UserController extends  BaseController {
 
     // 修改手机
     @RequestMapping(value = "update/mobile",method = RequestMethod.POST)
-    public ModelAndView updateMobile(@RequestParam("mobile") final String mobile,
+    public SuccessBean updateMobile(@RequestParam("mobile") final String mobile,
                                      @RequestParam("verifycode") final String verifycode,
                                      HttpServletRequest request,
                                      HttpServletResponse response) throws ParseException {
@@ -207,9 +207,7 @@ public class UserController extends  BaseController {
         request.getSession().removeAttribute("reset_mobile");
         request.getSession().removeAttribute("reset_mobile_verifycode");
         request.getSession().removeAttribute("reset_mobile_verifycode_expired_date");
-        Map resp = new HashMap();
-        resp.put("resp","手机号修改成功");
-        return new ModelAndView("profile",resp);
+        return new SuccessBean(200,"手机号码修改成功",user,null);
     }
 
 
@@ -222,7 +220,7 @@ public class UserController extends  BaseController {
      */
     // 获取邮箱验证码
     @RequestMapping("update/email/verify/{email}")
-    public ModelAndView verifyEmail(@PathVariable("email") final String email,
+    public SuccessBean verifyEmail(@PathVariable("email") final String email,
                                     HttpServletRequest request,
                                     HttpServletResponse response){
 
@@ -239,9 +237,8 @@ public class UserController extends  BaseController {
         session.setAttribute("reset_email_verifycode",verifycode);
         session.setAttribute("reset_email_verifycode_expired_date",Utils.getTimeWithDuration(5 *60 *1000));
         SMSService.sendEmailVerifyCode(email,"校园二手市场",verifycode);
-        Map resp = new HashMap();
-        resp.put("resp","验证码已经发送到邮箱" +email);
-        return new ModelAndView("profile",resp);
+
+        return new SuccessBean(200,"验证码已经发送到邮箱" +email);
     }
 
     /**
@@ -253,55 +250,71 @@ public class UserController extends  BaseController {
      * @return
      * @throws ParseException
      */
-    @RequestMapping(value = "upodate/email",method = RequestMethod.POST)
-    public ModelAndView updateEmail(@RequestParam("email") final String email,
-                                    @RequestParam("verifycode") final String verifycode,
+    @RequestMapping(value = "update/email",method = RequestMethod.POST)
+    public SuccessBean updateEmail(@RequestParam("email")      final String email,
+                                   @RequestParam("verifycode") final String verifycode,
                                     HttpServletRequest request,
                                     HttpServletResponse response) throws ParseException {
 
-            String email_session = (String) request.getSession().getAttribute("reset_email");
-            String verifycode_session = (String)request.getSession().getAttribute("reset_email_verifycode");
-            String expiredDate = (String) request.getSession().getAttribute("reset_email_verifycode_expired_date");
+        String email_session = (String) request.getSession().getAttribute("reset_email");
+        String verifycode_session = (String)request.getSession().getAttribute("reset_email_verifycode");
+        String expiredDate = (String) request.getSession().getAttribute("reset_email_verifycode_expired_date");
 
 
-            if(email_session == null || !email_session.equals(email)){
-                throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE_NOT_SEND);
-            }
+        if(email_session == null || !email_session.equals(email))
+            throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE_NOT_SEND);
 
-            if (!verifycode_session.equals(verifycode))
-                throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE);
+        if (!verifycode_session.equals(verifycode))
+            throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE);
 
-            if(Utils.parseStringToDate(expiredDate,"yyyyMMddHHmmssSSS").before(new Date()))
-                throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE_EXPIRED);
+        if(Utils.parseStringToDate(expiredDate,"yyyyMMddHHmmssSSS").before(new Date()))
+            throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE_EXPIRED);
 
-            User user = userDao.findById((Serializable) request.getSession().getAttribute("userid"));
-            user.setEmail(email);
-            userDao.update(user);
+        User user = userDao.findById((Serializable) request.getSession().getAttribute("userid"));
+        user.setEmail(email);
+        userDao.update(user);
 
-            request.getSession().removeAttribute("reset_email");
-            request.getSession().removeAttribute("reset_email_verifycode");
-            request.getSession().removeAttribute("reset_email_verifycode_expired_date");
-            Map resp = new HashMap();
-            resp.put("resp","手机号修改成功");
+        request.getSession().removeAttribute("reset_email");
+        request.getSession().removeAttribute("reset_email_verifycode");
+        request.getSession().removeAttribute("reset_email_verifycode_expired_date");
 
-            return new ModelAndView("profile",resp);
+        return new SuccessBean(200,"邮箱修改成功",user,null);
     }
 
-
-
-    // 查看我购买的商品
-
-
-
-
-    // 查看我最近查看的商品
-
-
-
-    // 查看我的收藏
-
-
     // 查看我出售的商品
+
+    /**
+     *
+     * @param status
+     * @param offset
+     * @param limit
+     * @param request
+     * @param response
+     * @return
+     */
+    public SuccessBean commodities(@RequestParam("status") final int status,
+                                   @RequestParam("offset") final int offset,
+                                   @RequestParam("limit") final int limit,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response){
+
+        HttpSession session = request.getSession();
+        String userId = (String) session.getAttribute("userid");
+        User user = userDao.findById(userId);
+
+        List<Commodity> commodityList  = commodityDao.listCommodityByUserId(userId,status,offset,limit);
+        if (commodityList == null)
+            throw new UserException(USER_EXCEPTOIN_TYPE.USER_EXCEPTOIN_TYPE_NONE_COMMODITY);
+
+        List<CommodityBean> commodityBeans = new ArrayList<CommodityBean>();
+        for (Commodity commodity: commodityList){
+            List<String> images=  commodityImageDao.findByCommodity(commodity.getCommodityId());
+            CommodityBean commodityBean = new CommodityBean(commodity,images,user);
+            commodityBeans.add(commodityBean);
+        }
+
+        return new SuccessBean(200,"数据查找成功",null,commodityBeans);
+    }
 
 
 

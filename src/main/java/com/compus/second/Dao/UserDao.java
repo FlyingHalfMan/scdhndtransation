@@ -79,12 +79,10 @@ public class UserDao {
 
     public User findByCount(String count) throws UserException{
         String sql = "";
-        if (Utils.isRightEmail(count))
-        {
+        if (Utils.isRightEmail(count)) {
             sql = "select u from User  as u where  u.email =:count";
         }
-        else if(Utils.isRightMobile(count))
-        {
+        else if(Utils.isRightMobile(count)) {
             sql="select  u from User as u where  u.mobile =:count";
         }
         else {
@@ -98,10 +96,10 @@ public class UserDao {
     /**
      * 查看所有的用户
      */
-    public List<User> listUsers()
+    public List<User> listUsers(int offset,int limit)
     {
         String sql = "select u from User as u";
-        Query query = entityManager.createQuery(sql);
+        Query query = entityManager.createQuery(sql).setFirstResult(offset).setMaxResults(limit);
         return query.getResultList()== null || query.getResultList().size() <1 ?null: query.getResultList();
     }
 

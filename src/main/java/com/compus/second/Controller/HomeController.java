@@ -33,9 +33,6 @@ public class HomeController extends BaseController {
         /**
          * 1. 判断是否存在cookie
          */
-
-
-
         return new ModelAndView("index",null);
     }
 }

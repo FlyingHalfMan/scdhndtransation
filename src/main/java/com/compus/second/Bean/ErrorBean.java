@@ -18,6 +18,10 @@ public class ErrorBean  implements Serializable{
         this.code = e.getCode();
         this.msg = e.getMsg();
     }
+    public ErrorBean(Exception e){
+        this.code = 500;
+        this.msg = e.getLocalizedMessage();
+    }
 
     public ErrorBean(int code, String msg)
     {

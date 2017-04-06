@@ -6,7 +6,9 @@ package com.compus.second.Exception.Enum;
 public enum  CART_EXCEPTION_TYPE {
 
     CART_EXCEPTION_COMMODITY_SOLD_OUT(-8001,"无法添加至购物车，商品已经卖完了"),
-    CART_EXCEPTION_COMMODITY_OFF_SALE(-8002,"无法添加购物车，商品不存在或者已经下架");
+    CART_EXCEPTION_COMMODITY_OFF_SALE(-8002,"无法添加购物车，商品不存在或者已经下架"),
+    CART_EXCEPTION_CART_EMPTY(-8003,"你还没有添加任何商品"),
+    CART_EXCEPTION_COMMODITY_NOT_FOUND(-8004,"购物车中不存在该商品");
 
 
     private int code;

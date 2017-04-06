@@ -11,7 +11,8 @@ public enum  INVALID_EXCEPTION_TYPE  {
     INVALID_EXCEPTION_VERIFYCODE_NOT_SEND(-4005,"未向该账号发送过验证码"),
     INVALID_EXCEPTION_COUNT_NOT_REQUEST_REGIST(-4006,"该账号和请求注册的账号不一致,请重新获取验证码"),
     INVALID_EXCEPTION_DIRRERENT_PASSWORD(-4007,"密码不一致，请重新输入"),
-    INVALID_EXCEPTION_VERIFYCODE_EXPIRED(-4008,"验证码已经失效，请重新获取");
+    INVALID_EXCEPTION_VERIFYCODE_EXPIRED(-4008,"验证码已经失效，请重新获取"),
+    INVALID_EXCEPTION_INVALIDE_NUMBER(-4009,"无效的数字");
     private int code;
     private String msg;
 

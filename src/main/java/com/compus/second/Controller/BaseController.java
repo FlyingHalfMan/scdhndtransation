@@ -7,6 +7,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * Created by cai on 2017/3/15.
@@ -55,5 +59,21 @@ public class BaseController {
     {
         ErrorBean error  = new ErrorBean(e);
         return new ResponseEntity<ErrorBean>(error, HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<ErrorBean> ioException(IOException e){
+
+        ErrorBean error  = new ErrorBean(e);
+        return new ResponseEntity<ErrorBean>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+
+    protected Map<String,Object> responsBody(Object object){
+
+        Map<String,Object> resp = new HashMap<String,Object>();
+        resp.put("resp",object);
+        return resp;
     }
 }

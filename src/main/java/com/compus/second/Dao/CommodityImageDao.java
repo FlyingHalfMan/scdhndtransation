@@ -19,9 +19,9 @@ public class CommodityImageDao {
     private EntityManager entityManager;
 
 
-    public List<CommodityImage> findByCommodity(String commodityId)
+    public List<String> findByCommodity(String commodityId)
     {
-        String sql = "select  c from CommodityImage  as c where  c.commodityId=:commodityId";
+        String sql = "select  c.imageName from CommodityImage  as c where  c.commodityId=:commodityId";
         Query query  = entityManager.createQuery(sql).setParameter("commodityId",commodityId);
         return query.getResultList() == null || query.getResultList().size()<1 ?null :  query.getResultList();
     }

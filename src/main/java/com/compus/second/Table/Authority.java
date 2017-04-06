@@ -1,15 +1,17 @@
 package com.compus.second.Table;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import org.springframework.stereotype.Component;
+
+import javax.persistence.*;
 
 /**
  * Created by cai on 2017/3/20.
  */
 
 // 保存各项权限对应的url
-
+@Entity
+@Table(name = "cs_authority")
+@Component
 public class Authority {
 
     private int id;

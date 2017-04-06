@@ -15,22 +15,21 @@ import java.util.List;
  */
 
 @Repository
+@Transactional
 public class CartDao {
 
     @PersistenceContext
     private EntityManager entityManager;
 
-    @Transactional
+
     public void addCart(Cart cart){
         entityManager.persist(cart);
     }
 
-    @Transactional
     public void deleteCart(Cart cart){
         entityManager.remove(cart);
     }
 
-    @Transactional
     public  void updateCart(Cart ca){
         entityManager.merge(ca);
     }
@@ -44,11 +43,24 @@ public class CartDao {
      * @param userId
      * @return
      */
-    public List<Cart> findByUserId(Serializable userId){
+    public List<Cart> findByUserId(Serializable userId,int offset,int limit){
 
         String sql = "select  c from Cart as c where c.userId = :userId";
-       Query query = entityManager.createQuery(sql).setParameter("userId",userId);
-       return query.getResultList() == null || query.getResultList().size() < 1 ? null :  query.getResultList();
+        Query query = entityManager.createQuery(sql).setParameter("userId",userId)
+                                                    .setFirstResult(offset)
+                                                    .setMaxResults(limit);
+
+        return query.getResultList() == null || query.getResultList().size() < 1 ? null :  query.getResultList();
+    }
+
+
+    public Cart  findByUserIdAndCommodityId(String userId,String commodityId){
+
+        String sql = "select c from Cart  as c where c.userId =:userId and c.commodityId = :commodityId";
+        Query query = entityManager.createQuery(sql).setParameter("userId",userId)
+                                                    .setParameter("commodityId",commodityId);
+
+        return query.getResultList() == null || query.getResultList().size() < 1 ? null : (Cart) query.getResultList().get(0);
     }
 
 

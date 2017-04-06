@@ -1,18 +1,25 @@
 package com.compus.second.Bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by cai on 2017/3/17.
  */
-public class SuccessBean {
+public class SuccessBean implements Serializable{
     private int code;
     private String msg;
     private Object model;
-    private List<Object> Models;
+    private List models;
 
     public SuccessBean(){};
     public SuccessBean(int code,String msg){this.code =code;this.msg = msg;}
+    public SuccessBean(int code,String msg,Object model,List models){
+        this.code = code;
+        this.msg = msg;
+        this.model = model;
+        this.models = models;
+    }
 
 
     public int getCode() {
@@ -39,11 +46,11 @@ public class SuccessBean {
         this.model = model;
     }
 
-    public List<Object> getModels() {
-        return Models;
+    public List getModels() {
+        return models;
     }
 
-    public void setModels(List<Object> models) {
-        Models = models;
+    public void setModels(List models) {
+        this.models = models;
     }
 }

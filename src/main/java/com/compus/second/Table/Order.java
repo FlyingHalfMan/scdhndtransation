@@ -1,5 +1,9 @@
 package com.compus.second.Table;
 
+import antlr.StringUtils;
+import com.compus.second.Bean.OrderBean;
+import com.compus.second.Constant;
+import com.compus.second.Utils.EncryptUtil;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -9,7 +13,7 @@ import java.util.Date;
 /**
  * Created by cai on 2017/3/23.
  */
-@Table(name = "tg_order")
+@Table(name = "cs_order")
 @Entity
 @Component
 public class Order implements Serializable {
@@ -17,7 +21,6 @@ public class Order implements Serializable {
     private int id;
     private String  commodityId;    // 商品号
     private String  orderId;        // 订单号
-    private String  userId;         // 下单用户
     private String  orderDesc;      // 订单描述（使用商品的标题）
     private int     numbers;        // 商品购买数量
     private float   price;          // 价格
@@ -26,6 +29,30 @@ public class Order implements Serializable {
     private int     delivery;       // 配送方式   1.上门提货，2。送货上门
     private String  address;        // 支付地址
     private int     status;         // 订单的当前状况  1。未付款 2。已经付款 3。交易完成 4。取消订单
+
+    private String  buyerId;
+    private String  mobile;
+    private String  email;
+
+
+    public Order(){};
+
+    public Order(OrderBean orderBean,User user){
+
+        this.commodityId    = orderBean.getCommodityId();
+        this.orderId        = EncryptUtil.randomString();
+        this.orderDesc      = orderBean.getCommodityDesc();
+        this.numbers        = orderBean.getNumber();
+        this.price          = orderBean.getTotalPrice();
+        this.orderDate      = new Date();
+        this.payment        = orderBean.getPaymentId();
+        this.delivery       = orderBean.getDeliveryId();
+        this.address        = orderBean.getAddress();
+        this.status         = Constant.ORDER_STATUS_WAIT_TO_PAY;
+        this.buyerId        = user.getUserId();
+        this.mobile         = user.getMobile();
+        this.email          = user.getEmail();
+    }
 
 
     @Id
@@ -56,13 +83,6 @@ public class Order implements Serializable {
         this.orderId = orderId;
     }
 
-    public String getUserId() {
-        return userId;
-    }
-
-    public void setUserId(String userId) {
-        this.userId = userId;
-    }
 
     public int getNumbers() {
         return numbers;
@@ -126,5 +146,29 @@ public class Order implements Serializable {
 
     public void setAddress(String address) {
         this.address = address;
+    }
+
+    public String getBuyerId() {
+        return buyerId;
+    }
+
+    public void setBuyerId(String buyerId) {
+        this.buyerId = buyerId;
+    }
+
+    public String getMobile() {
+        return mobile;
+    }
+
+    public void setMobile(String mobile) {
+        this.mobile = mobile;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 }

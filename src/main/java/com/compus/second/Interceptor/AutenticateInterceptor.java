@@ -1,4 +1,4 @@
-package com.compus.second;
+package com.compus.second.Interceptor;
 
 import com.compus.second.Utils.EncryptUtil;
 import org.springframework.web.servlet.HandlerInterceptor;

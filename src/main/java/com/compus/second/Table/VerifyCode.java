@@ -2,8 +2,7 @@ package com.compus.second.Table;
 
 import org.springframework.stereotype.Component;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * Created by cai on 2017/3/17.
@@ -12,7 +11,9 @@ import javax.persistence.Table;
 /*
  *  verifycode 考虑 可以放到session当中，并设置session的有效时间
  */
-
+@Table(name = "cs_verifycode")
+@Entity
+@Component
 public class VerifyCode {
 
     private int id;
@@ -20,6 +21,8 @@ public class VerifyCode {
     private String verifycode;
 
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     public int getId() {
         return id;
     }

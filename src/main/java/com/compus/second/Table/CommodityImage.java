@@ -10,7 +10,7 @@ import javax.persistence.*;
 
 // 商品图片的中间表
 
-@Table
+@Table(name = "cs_commodityImage")
 @Entity
 @Component
 public class CommodityImage {

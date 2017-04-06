@@ -61,19 +61,7 @@ public class OrderDao {
     }
 
 
-    /**
-     * 查看用户的全部订单
-     * @param userId
-     * @param offset
-     * @param limit
-     * @return
-     */
-    public List<Order> listOrdersByUserId(String userId, int offset, int limit){
 
-        String sql = "select o from Order as o where o.userId = :userId order by o.orderDate desc ";
-        Query query = entityManager.createQuery(sql).setParameter("userId",userId);
-        return query.getResultList() == null || query.getResultList().size() < 1 ? null :query.getResultList();
-    }
 
     /**
      * 搜索订单，搜索的方式包含 订单号查找和订单描述查找
@@ -93,10 +81,30 @@ public class OrderDao {
      * @param userId
      * @return
      */
-    public List<Order> findOrdersByUserId(String userId){
+    public List<Order> findOrdersByUserId(String userId,int offset,int limit){
 
-        String sql = "select o from Order  as o where  o.userId = :userId order by o.orderDate desc ";
-        Query query = entityManager.createQuery(sql).setParameter("userId",userId);
+        String sql = "select o from Order  as o where  o.buyerId = :userId order by o.orderDate desc ";
+        Query query = entityManager.createQuery(sql)
+                                   .setParameter("userId",userId)
+                                   .setFirstResult(offset)
+                                   .setMaxResults(limit);
         return query.getResultList() == null || query.getResultList().size() < 1 ? null : query.getResultList();
+    }
+
+    public List<Order> findOrderByCommodityId(String commodityId){
+
+        String sql = "select o from Order as o where o.commodityId =:commodityId order by o.orderDate desc ";
+        Query query = entityManager.createQuery(sql).setParameter("commodityId",commodityId);
+        return query.getResultList() == null || query.getResultList().size() < 1 ? null :query.getResultList();
+    }
+
+
+
+    public List<Order> listAllOrders(int offset,int limit){
+
+        String sql = "select o from Order as o";
+        Query  query = entityManager.createQuery(sql);
+        query.setFirstResult(offset).setMaxResults(limit);
+        return query.getResultList() == null || query.getResultList().size() < 1 ? null :query.getResultList();
     }
 }

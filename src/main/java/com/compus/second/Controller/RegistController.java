@@ -1,6 +1,8 @@
 package com.compus.second.Controller;
 
 import com.aliyuncs.exceptions.ClientException;
+import com.compus.second.Bean.SuccessBean;
+import com.compus.second.Constant;
 import com.compus.second.Dao.UserDao;
 import com.compus.second.Exception.Enum.INVALID_EXCEPTION_TYPE;
 import com.compus.second.Exception.Enum.USER_EXCEPTOIN_TYPE;
@@ -10,19 +12,25 @@ import com.compus.second.Table.User;
 import com.compus.second.Utils.EncryptUtil;
 import com.compus.second.Utils.SMSService;
 import com.compus.second.Utils.Utils;
+import org.hibernate.Session;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by cai on 2017/3/15.
@@ -47,7 +55,6 @@ public class RegistController extends BaseController {
 
     /**
      *  注册请求
-     * @param count     请求注册的账号：请求验证码的时候会将账号写入到session中如果账号不一致会拒绝注册
      * @param password  账号的密码，客户端使用cookie中的salt加密后发送到服务端，必须和repeat一致
      * @param repeat    再次输入的密码，必须与password一致
      * @param request
@@ -55,12 +62,13 @@ public class RegistController extends BaseController {
      * @return          注册成功后会将 userId securityToken auth 和验证过期时间组合成一个token 有效时间24小时写入到session中。
      */
     @RequestMapping(path = "regist",method = RequestMethod.POST)
-    public ModelAndView regist(@RequestParam("count") final String count,
-                               @RequestParam("password") final String password,
+    public ModelAndView regist(@RequestParam("password") final String password,
                                @RequestParam("repeat") final String repeat,
                                HttpServletRequest request,
-                               HttpServletResponse response)
-    {
+                               HttpServletResponse response) {
+
+        String count = (String) request.getSession().getAttribute("count");
+
         //先验证账号的有效性，是否是正确的账号，账号是否已经注册。
         if(Utils.isRightEmail(count)) {
             //正确的邮箱
@@ -116,9 +124,10 @@ public class RegistController extends BaseController {
      * @throws ClientException
      */
     @RequestMapping(path = "regist/verifycode",method = RequestMethod.GET)
-    public ModelAndView getVerifyCode(@RequestParam("count") final  String count,
-                                      HttpServletRequest request,
-                                      HttpServletResponse response) throws ClientException {
+    @ResponseBody
+    public SuccessBean getVerifyCode(@RequestParam("count") final  String count,
+                                        HttpServletRequest request,
+                                        HttpServletResponse response) throws ClientException {
 
         String verifycode = EncryptUtil.getVerifyCode();
         User user = userDao.findByCount(count);
@@ -126,13 +135,11 @@ public class RegistController extends BaseController {
 
         if (user !=null) throw new UserException(USER_EXCEPTOIN_TYPE.USER_EXCEPTOIN_TYPE_RIGHTED);
         // 判断是不是手机
-        if(Utils.isRightMobile(count))
-        {
+        if(Utils.isRightMobile(count)) {
            //发送手机验证码
            SMSService.sendRegistVerifyCode(count,verifycode);
         }
-        else if(Utils.isRightEmail(count))
-        {
+        else if(Utils.isRightEmail(count)) {
            //发送邮件验证码
            SMSService.sendEmailVerifyCode(count,"校园二手",verifycode);
         }
@@ -144,18 +151,20 @@ public class RegistController extends BaseController {
         // 将请求注册的手机和验证码，验证码过期时间写入到session中
         HttpSession session = request.getSession();
         // 将count 写入到 session 中 表明当前注册的账号
-        session.setAttribute("count",count);
-        // 将验证码写入到session中
+        session.setAttribute(Constant.SESSION_REGIST_COUNT,count);
+        // 将验证码入到session中
         session.setAttribute(count,verifycode);
         // 设置验证码的过期时间
-        session.setAttribute("expiredDate",Utils.getTimeWithDuration(5 *60 *1000));
-        session.setAttribute("salt",EncryptUtil.salt());
-        return new ModelAndView("regist",null);
+        session.setAttribute(Constant.SESSION_REGIST_EXPIRED_DATE,Utils.getTimeWithDuration(5 *60 *1000));
+        session.setAttribute(Constant.SESSION_SALT,EncryptUtil.salt());
+
+        //return new ResponseEntity<SuccessBean>(new SuccessBean(200,"验证码已经成功发送到"+count), HttpStatus.ACCEPTED);
+        return new SuccessBean(200,"验证码已经成功发送到"+count);
     }
 
 
     /**
-     *
+     * 验证注册是否通过，并且跳转到下一个页面
      * @param count
      * @param verifycode
      * @param request
@@ -163,18 +172,20 @@ public class RegistController extends BaseController {
      * @return
      */
 
-    @RequestMapping(path = "regist/verifycode",method = RequestMethod.POST)
-    public ModelAndView verifyCount(@RequestParam("count") final String count,
-                                    @RequestParam("verifycode") final String verifycode,
-                                    HttpServletRequest request,
-                                    HttpServletResponse response) throws ParseException {
+    @RequestMapping(path = "regist/verify",method = RequestMethod.POST)
+    @ResponseBody
+    public SuccessBean verifyCount(@RequestParam("count") final String count,
+                              @RequestParam("verifycode") final String verifycode,
+                              HttpServletRequest request,
+                              HttpServletResponse response) throws ParseException, IOException {
         // 验证账号的有效性
         if(!Utils.isRightMobile(count) && !Utils.isRightEmail(count))
             throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_COUNT);
 
         String salt = (String) request.getSession().getAttribute("salt");
         String code = (String) request.getSession().getAttribute(count);
-        Date date =  Utils.parseStringToDate((String) request.getSession().getAttribute("expriedDate"),"yyyyMMddHHmmssSSS");
+        Date   date = Utils.parseStringToDate((String)request.getSession().getAttribute(Constant.SESSION_REGIST_EXPIRED_DATE)
+                                                                                       ,"yyyy-MM-dd HH:mm:ss.SSS");
 
         if (code == null )
             //没有发送过验证码
@@ -187,15 +198,29 @@ public class RegistController extends BaseController {
             throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE);
         }
 
-        // 验证通过，将salt 写入到cookie，同时清除session
-        HttpSession session = request.getSession();
-        session.removeAttribute("count");
-        session.removeAttribute("verifycode");
-        session.removeAttribute("expiredDate");
-
         //将salt 写入到cookie中
-        Cookie cookie = new Cookie("salt",salt);
+        Cookie countCookie = new Cookie(Constant.SESSION_REGIST_COUNT,count);
+        countCookie.setMaxAge(30*60);
+        response.addCookie(countCookie);
+        Cookie cookie = new Cookie(Constant.SESSION_SALT,salt);
+        cookie.setMaxAge(30 *60);
         response.addCookie(cookie);
-        return new ModelAndView("regist",null);
+        response.flushBuffer();
+        return new SuccessBean(200,"http://localhost:8080/second/compus/password");
+    }
+
+
+    @RequestMapping("password")
+    public String goToSetPassword(HttpServletRequest request,
+                                  HttpServletResponse response){
+        HttpSession session = request.getSession();
+        if (session.getAttribute(Constant.SESSION_REGIST_COUNT) == null){
+            return "redirect:404.html";
+        }
+
+        session.removeAttribute(Constant.SESSION_REGIST_COUNT);
+        session.removeAttribute(Constant.SESSION_REGIST_VERIFYCODE);
+        session.removeAttribute(Constant.SESSION_REGIST_EXPIRED_DATE);
+        return "password";
     }
 }

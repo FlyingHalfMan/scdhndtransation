@@ -1,5 +1,7 @@
 package com.compus.second.Controller;
 
+import com.compus.second.Bean.CartCommodity;
+import com.compus.second.Bean.SuccessBean;
 import com.compus.second.Constant;
 import com.compus.second.Dao.CartDao;
 import com.compus.second.Dao.CommodityDao;
@@ -11,14 +13,13 @@ import com.compus.second.Table.Cart;
 import com.compus.second.Table.Commodity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -49,15 +50,25 @@ public class CartController {
      * @param response
      * @return
      */
-    @RequestMapping(value = "",method = RequestMethod.GET)
-    public ModelAndView listCart(@RequestParam("offset") final int offset,
-                                 @RequestParam("limit") final int limit,
-                                 HttpServletRequest request, HttpServletResponse response){
+    @RequestMapping(path = "",method = RequestMethod.GET)
+    public SuccessBean listCart(@RequestParam("offset") final int offset,
+                                @RequestParam("limit") final int limit,
+                                HttpServletRequest request, HttpServletResponse response){
 
         HttpSession session = request.getSession();
         String userId = (String) session.getAttribute("userId");
-        List<Cart> cartList = cartDao.findByUserId(userId);
-        return new ModelAndView("cart",null);
+        List<Cart> cartList = cartDao.findByUserId(userId,offset,limit);
+        if (cartList == null)
+            throw new CartException(CART_EXCEPTION_TYPE.CART_EXCEPTION_CART_EMPTY);
+
+        List<CartCommodity> cartCommodities = new ArrayList<CartCommodity>();
+        for (Cart cart :cartList){
+            Commodity commodity = commodityDao.findByCommodityId(cart.getCommodityId());
+            CartCommodity  cartCommodity = new CartCommodity(commodity,cart);
+            cartCommodities.add(cartCommodity);
+        }
+
+        return new SuccessBean(200,"信息获取成功",null,cartCommodities);
     }
 
     /**
@@ -78,9 +89,15 @@ public class CartController {
         Commodity commodity = commodityDao.findByCommodityId(commodityId);
         if (commodity ==null)
             throw new CommodityException(COMMODITY_EXCEPTION_TYPE.COMMODITY_EXCEPTION_TYPE_NOTFOUND);
+
         // 已经卖完了
         if(commodity.getStatus() == Constant.COMMODITY_STATUS_SOLD)
             throw new CartException(CART_EXCEPTION_TYPE.CART_EXCEPTION_COMMODITY_SOLD_OUT);
+
+        // 商品已经下架
+        if (commodity.getStatus() == Constant.COMMODITY_STATUS_SOLD_OUT)
+            throw new CartException(CART_EXCEPTION_TYPE.CART_EXCEPTION_COMMODITY_OFF_SALE);
+
         Cart cart = new Cart();
         cart.setNumber(1);
         cart.setAddDate(new Date());
@@ -99,10 +116,16 @@ public class CartController {
      */
 
     @RequestMapping("/delete")
-    public ModelAndView deleteCart(@RequestParam("commodityId") final String commodityId,
+    @ResponseBody
+    public SuccessBean deleteCart(@RequestParam("commodityId") final String commodityId,
                                    HttpServletRequest request,
-                                   HttpServletResponse response){
-        return new ModelAndView();
+                                   HttpServletResponse response,
+                                   @SessionAttribute("userid") final String userId){
+        Cart cart = cartDao.findByUserIdAndCommodityId(userId,commodityId);
+        if (cart == null)
+            throw new CartException(CART_EXCEPTION_TYPE.CART_EXCEPTION_COMMODITY_NOT_FOUND);
+        cartDao.deleteCart(cart);
+        return new SuccessBean(200,"删除成功");
     }
 
 
@@ -112,6 +135,13 @@ public class CartController {
      */
 //    public ModelAndView updateCart(@RequestParam(""))
 
+
+    /**
+     * 清空购物车
+     * @param request
+     * @param response
+     * @return
+     */
     @RequestMapping("delete/all")
     public ModelAndView deleteAllCart(HttpServletRequest request,
                                      HttpServletResponse response){

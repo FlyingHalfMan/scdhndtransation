@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <title>登录页面</title>
-    <meta>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../../Resources/bootstrap-3.3.0/css/style.css">
+
     <!-- 引入 Bootstrap -->
     <!-- 新 Bootstrap 核心 CSS 文件 -->
     <link href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -19,117 +19,49 @@
     <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
 
-    <link type="text/css" src="../Resources/bootstrap-3.3.0/css/bootstrap-theme.min.css" rel="stylesheet" />
-    <link type="text/css" src="../Resources/bootstrap-3.3.0/css/bootstrap.min.css" />
-
-    <script>
-        var mobile =$("#count").value;
-        var pwd = $("#pwd").value;
-        var saved = $("#saved").value;
-
-        $(document).ready(function () {
-            $("#confirm").click(function () {
-                var pst= $.ajax({
-                    cache:true,
-                    type:"POST",
-                    url:"http://localhost:8080/second/compus/login",
-                    data:$("#loginform").serialize(),
-                    async:true,
-                    dataType:"json",
-                    error:function(xmlhttpRequest){
-                        var error = $.parseJSON(xmlhttpRequest.responseText);
-                        alert("error" +error.msg);
-                    },
-                    success:function (data,statuscode) {
-                        var result = $.parseJSON(data);
-                        console.assert(result);
-                    }
-                });
-//                $("#loginform").submit(pst);
-            });
-        });
-
-    </script>
-    <script>
-        $(document).ready(function(){
-            $("p").click(function(){
-                $(this).hide();
-            });
-        });
-    </script>
-
-    <style type="text/css">
-
-        #login-table{
-            margin-left: 50%;
-            margin-right: 10%;
-            margin-top: 10%;
-            width: 30%;
-            height: 20%;
-            border-collapse: separate;
-            border-spacing: 20px;
-        }
-
-        #count {
-            width: 100%;
-            height: 100%;
-        }
-        input{
-            border-radius: 5px;
-            font-size: 20px;
-        }
-        #confirm{
-            margin: 0 auto;
-            width:100%;
-            border-radius: 5px;
-            color: white;
-            background-color: #ac2925;
-            height: 100%;
-        }
-
-        #regist{
-            align-content: center;
-            color: dodgerblue;
-        }
-
-
-    </style>
-
+    <script href="../Resources/jquery-3.1.1.min.js"></script>
+    <link href="../Resources/bootstrap-3.3.0/css/bootstrap.min.css">
+    <link href="../Resources/bootstrap-3.3.0/css/bootstrap-theme.min.css">
+    <script href="../Resources/bootstrap-3.3.0/js/bootstrap.min.js"></script>
 </head>
 <body>
-    <p>这里是登录页面</p>
-    <!--登录页面需要的几个要求-->
-    <!--1。账号输入框-->
-    <!--2。密码输入框-->
-    <!--3. 验证码获取框。如果用户是第一次登录的时候显示。之后登录不在显示-->
-    <!--4。是否保存密码-->
-    <!--5。忘记密码链接，跳转到密码重置页面-->
-    <!--6。注册链接，跳转到注册页面。-->
-
-
-
-    <form id ="loginform"  action= "http://localhost:8080/second/compus/login" method="post">
-        <table class="table-bordered" id="login-table">
-            <tr>
-                <td colspan="2"><input type="text" id="count" name="count" placeholder="请输入注册手机号/邮箱号码" /></td>
-            </tr>
-            <tr>
-                <td colspan="2"><input type="password" id="pwd" name="password" placeholder="请输入密码" /></td>
-            </tr>
-            <tr>
-                <td><input type="checkbox" id="save" name="keplogin" value="false"/>7天免登录</td>
-                <td align="right"><a href="#">找回密码</a> </td>
-            </tr>
-            <tr><td colspan="2"><button type="button" id="confirm" content="登录">登录</button></td></tr>
-            <tr><td colspan="2" ><a  id="regist" href="http://localhost:8080/second/compus/regist">我要注册</a></td></tr>
-        </table>
-    </form>
-
-
-
-
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-2 column">
+        </div>
+        <div class="col-md-6 column">
+            <form class="form-horizontal" role="form">
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">手机/邮箱</label>
+                    <div class="col-sm-10">
+                        <input type="email" class="form-control" id="inputEmail3" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="inputPassword3" class="col-sm-2 control-label">密码</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="inputPassword3" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <div class="checkbox">
+                            <label><input type="checkbox" />记住我</label>
+                        </div>
+                        <div class=""> <a href="http://localhost:8080/second/compus/regist" target="_blank">我要注册</a> </div>
+                        <div class=""><a href="http://localhost:8080/second/compus/resetpwd" target="_blank">忘记密码</a> </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="submit" class="btn btn-success">登录</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4 column">
+        </div>
+    </div>
+</div>
 </body>
-
-
-
 </html>

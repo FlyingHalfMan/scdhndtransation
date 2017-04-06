@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * Created by cai on 2017/3/23.
  */
-@Table
+@Table(name = "cs_cart")
 @Entity
 @Component
 public class Cart implements Serializable{

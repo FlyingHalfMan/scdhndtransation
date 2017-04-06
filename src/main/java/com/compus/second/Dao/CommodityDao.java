@@ -1,5 +1,6 @@
 package com.compus.second.Dao;
 
+import com.compus.second.Constant;
 import com.compus.second.Exception.CommodityException;
 import com.compus.second.Exception.Enum.COMMODITY_EXCEPTION_TYPE;
 import com.compus.second.Table.Commodity;
@@ -119,13 +120,29 @@ public class CommodityDao {
      * @param sortId       查找的分类
      * @param offset
      * @param limit
-     * @param priceOpt  // 价格排序
-     * @param dateOpt   // 时间排序
      * @return
      */
-    public List<Commodity> listCommodityBySortId(int sortId,int offset,int limit,String priceOpt,String dateOpt)
-    {
-        String sql  = "select  c from Commodity  as c where  c.sortId =:sortid order by c.price " + priceOpt +"and c.date "+dateOpt;
+    public List<Commodity> listCommodityBySortId(int sortId,int offset,int limit,int orderOp) {
+
+        String sql ="";
+        switch (orderOp){
+            case Constant.COMMODITY_ORDER_BY_DATE_DESC:
+                sql = "select  c from Commodity  as c where  c.sortId =:sortid order by c.publishDate desc ";
+                break;
+            case Constant.COMMODITY_ORDER_BY_DATE_ASC:
+                sql = "select  c from Commodity  as c where  c.sortId =:sortid order by c.publishDate asc ";
+                break;
+            case Constant.COMMODITY_ORDER_BY_PRICE_DESC:
+                sql = "select  c from Commodity  as c where  c.sortId =:sortid order by c.price desc ";
+                break;
+            case Constant.COMMODITY_ORDER_BY_PRICE_ASC:
+                sql = "select  c from Commodity  as c where  c.sortId =:sortid order by c.price ASC ";
+                break;
+                default:
+                    sql = "select  c from Commodity  as c ";
+                    break;
+
+        }
         Query query = entityManager.createQuery(sql)
                                    .setParameter("sortid",sortId)
                                    .setFirstResult(offset)
@@ -135,127 +152,78 @@ public class CommodityDao {
 
 
     /**
-     *  查看分类并根据价格来查找
-     * @param sortId
-     * @param offset
-     * @param limit
-     * @param priceOpt
-     * @return
-     */
-    public List<Commodity> listCommodityBySortIdSortByPrice(int sortId,int offset,int limit,String priceOpt)
-    {
-        String sql  = "select  c from Commodity  as c where  c.sortId =:sortid order by c.price " +priceOpt;
-        Query query = entityManager.createQuery(sql)
-                .setParameter("sortid",sortId)
-                .setFirstResult(offset)
-                .setMaxResults(limit);
-        return query.getResultList() == null || query.getResultList().size() <1 ?null : query.getResultList();
-    }
-
-    /**
-     *  搜索分类并根据时间来排序，默认使用
-     * @param sortId
-     * @param offset
-     * @param limit
-     * @param dateOpt
-     * @return
-     */
-    public List<Commodity> listCommodityBySortIdSortByDate(int sortId,int offset,int limit,String dateOpt)
-    {
-        if(dateOpt == null || !dateOpt.equals("asc"))  dateOpt ="desc";
-        String sql  = "select  c from Commodity  as c where  c.sortId =:sortid order by c.date " +dateOpt;
-        Query query = entityManager.createQuery(sql)
-                .setParameter("sortid",sortId)
-                .setFirstResult(offset)
-                .setMaxResults(limit);
-        return query.getResultList() == null || query.getResultList().size() <1 ?null : query.getResultList();
-    }
-
-
-
-    /**
      * 查看某个用户出售的全部商品（用户详情页面，管理员）
      * @param userId
-     * @param status 商品的状态，已经售出还是未售出(不填的话默认查询全部)
      * @param offset
      * @param limit
      * @return
      */
 
-    public List<Commodity> listCommodityByUserId(String userId,int status,int offset,int limit)
-    {
+    public List<Commodity> listCommodityByUserId(String userId,int order,int offset,int limit) {
+
         String sql ="";
-        Query query = null;
-        if(status == 0) {
-             sql = "select  c from Commodity as c where c.userId =:userId order by c.date asc ";
-            query = entityManager.createQuery(sql).setParameter("userId",userId);
+        switch (order){
+            case Constant.COMMODITY_ORDER_BY_DATE_DESC:
+                sql = "select  c from Commodity  as c where c.userId =:userId and  order by c.publishDate desc ";
+                break;
+            case Constant.COMMODITY_ORDER_BY_DATE_ASC:
+                sql = "select  c from Commodity  as c where c.userId =:userId and  order by c.publishDate asc ";
+                break;
+            case Constant.COMMODITY_ORDER_BY_PRICE_DESC:
+                sql = "select  c from Commodity  as c where c.userId =:userId and  order by c.price desc ";
+                break;
+            case Constant.COMMODITY_ORDER_BY_PRICE_ASC:
+                sql = "select  c from Commodity  as c where c.userId =:userId and  order by c.price ASC ";
+                break;
+            default:
+                sql = "select  c from Commodity  as c where c.userId =:userId";
+                break;
         }
-        else {
-            // status = 1 未出售商品，status =2 已经售出商品
-            sql = "select c from Commodity  as c where  c.userId =:userId and c.status=:status order by c.date asc ";
-            query= entityManager.createQuery(sql).setParameter("userId",userId).setParameter("status",status);
-        }
-          query = query.setFirstResult(offset).setMaxResults(limit);
+        Query query = entityManager.createQuery(sql)
+                .setParameter("userId",userId)
+                .setFirstResult(offset)
+                .setMaxResults(limit);
         return  query.getResultList() == null || query.getResultList().size() < 1 ?null :query.getResultList();
     }
 
+
     /**
-     * 用户进行搜索商品，搜索只搜索商品名称，默认按照时间排序升序排列，可以自行选择，可以选择分类
-     * @param content 搜索的内容
-     * @param dateOp  排序的方式 asc 升序  desc 降序
-     * @return 商品数组 || null
+     * 搜索商品
+     * @param content
+     * @param sort
+     * @param order
+     * @param offset
+     * @param limit
+     * @return
      */
-    public List<Commodity>searchCommodity(String content,String dateOp,int sort,int offset,int limit)
-    {
-        if(dateOp == null || !dateOp.equals("asc"))dateOp="desc";
-        String sql  = "select  c from Commodity  as c where  c.title like %:content% and c.sortId =:sortid order by c.date " +dateOp;
-        Query query = entityManager.createQuery(sql)
+    public List<Commodity>searchCommodity(String content,int sort,int order,int offset,int limit) {
+
+        String sql ="";
+        switch (order){
+            case Constant.COMMODITY_ORDER_BY_DATE_DESC:
+                sql = "select  c from Commodity  as c where c.detail like %:content% or c.title like %:content% and  c.sortId =:sortid order by c.publishDate desc ";
+                break;
+            case Constant.COMMODITY_ORDER_BY_DATE_ASC:
+                sql = "select  c from Commodity  as c where c.detail like %:content% or c.title like %:content% and  c.sortId =:sortid order by c.publishDate asc ";
+                break;
+            case Constant.COMMODITY_ORDER_BY_PRICE_DESC:
+                sql = "select  c from Commodity  as c where c.detail like %:content% or c.title like %:content% and  c.sortId =:sortid order by c.price desc ";
+                break;
+            case Constant.COMMODITY_ORDER_BY_PRICE_ASC:
+                sql = "select  c from Commodity  as c where c.detail like %:content% or c.title like %:content% and  c.sortId =:sortid order by c.price ASC ";
+                break;
+            default:
+                sql = "select  c from Commodity  as c where c.detail like %:content% or c.title like %:content%";
+                break;
+        }
+
+       Query query = entityManager.createQuery(sql)
                                    .setParameter("content",content)
                                    .setParameter("sortid",sort)
                                    .setFirstResult(offset)
                                    .setMaxResults(limit);
         return query.getResultList() == null || query.getResultList().size() <1 ?null : query.getResultList();
     }
-
-    /**
-     *     只有搜索内容，不包含分类和自定义时间，默认使用时间升序排序
-     * @param content      搜索的内容
-     * @param offset       起点
-     * @param limit        终点
-     * @return
-     */
-    public List<Commodity>searchCommodity(String content,int offset,int limit)
-    {
-        String sql  = "select  c from Commodity  as c where  c.title like %:content%  order by c.date asc" ;
-        Query query = entityManager.createQuery(sql)
-                .setParameter("content",content)
-                .setFirstResult(offset)
-                .setMaxResults(limit);
-        return query.getResultList() == null || query.getResultList().size() <1 ?null : query.getResultList();
-    }
-
-    /**
-     * 搜索内容并根据时间来排序
-     * @param content
-     * @param dateOpt
-     * @param offset
-     * @param limit
-     * @return
-     */
-    public List<Commodity> searchCommodity(String content,String dateOpt,int offset,int limit)
-    {
-        String sql  = "select  c from Commodity  as c where  c.title like %:content%  order by  c.date "+dateOpt;
-        Query query = entityManager.createQuery(sql)
-                .setParameter("content",content)
-                .setFirstResult(offset)
-                .setMaxResults(limit);
-        return query.getResultList() == null || query.getResultList().size() <1 ?null : query.getResultList();
-    }
-
-
-
-
-
 
 
 }

@@ -53,7 +53,7 @@ public class OrderService {
            throw new OrderException(ORDER_EXCEPTION_TYPE.ORDER_EXCEPTION_COMMODITY_OFF_SALE);
 
        // 购买的数量超出了商品的实际数量
-        if (commodity.getNumber() < order.getNumbers())
+        if (commodity.getCount() < order.getNumbers())
             throw new OrderException(ORDER_EXCEPTION_TYPE.ORDER_EXCEPTION_INVALIDE_COMMODITY_NUMBER);
 
        // 商品已经出售
@@ -72,9 +72,9 @@ public class OrderService {
 //        保存订单信息
         orderDao.addOrder(order);
         //修改商品的数量
-        commodity.setNumber(commodity.getNumber() - order.getNumbers());
+        commodity.setCount(commodity.getCount() - order.getNumbers());
         // 商品已经卖光了
-        if (commodity.getNumber() == 0)
+        if (commodity.getCount() == 0)
             commodity.setStatus(Constant.COMMODITY_STATUS_SOLD);
         commodityDao.update(commodity);
     }
@@ -94,7 +94,7 @@ public class OrderService {
 
         //
         Commodity commodity = commodityDao.findByCommodityId(order.getCommodityId());
-        commodity.setNumber(commodity.getNumber() + order.getNumbers());
+        commodity.setCount(commodity.getCount() + order.getNumbers());
         if (commodity.getStatus() == Constant.COMMODITY_STATUS_SOLD)
             commodity.setStatus(Constant.COMMODITY_STATUS_ON_SALE);
         commodityDao.update(commodity);
@@ -116,9 +116,9 @@ public class OrderService {
      * 查看用户的全部订单
      */
 
-    public List<OrderBean> getOrdersByuserId(String userId){
+    public List<OrderBean> getOrdersByuserId(String userId,int offset,int limit){
 
-        List<Order> orderList =  orderDao.findOrdersByUserId(userId);
+        List<Order> orderList =  orderDao.findOrdersByUserId(userId,offset,limit);
         if(orderList == null) throw new OrderException(ORDER_EXCEPTION_TYPE.ORDER_EXCEPTION_COMMODITY_NOT_FOUND);
         return parseToOrderBean(orderList);
 
@@ -176,13 +176,13 @@ public class OrderService {
             Commodity commodity = commodityDao.findByCommodityId(order.getCommodityId());
             OrderBean orderBean = new OrderBean();
             orderBean.setCommodityId(commodity.getCommodityId());
-            orderBean.setCommodityDesc(commodity.getDescribe());
+            orderBean.setCommodityDesc(commodity.getDetail());
 
             //设置图片
-            List<CommodityImage> commodityImages = commodityImageDao.findByCommodity(commodity.getCommodityId());
+            List<String> commodityImages = commodityImageDao.findByCommodity(commodity.getCommodityId());
             String image = "";
             if (commodityImages == null)  image = "";
-            else  image = commodityImages.get(0).getImageName();
+            else  image = commodityImages.get(0);
             orderBean.setCommodityImage(image);
 
             // 设置订单的详细内容

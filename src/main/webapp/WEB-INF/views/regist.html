@@ -27,7 +27,7 @@
     </script>
     <script>
         function getVerifycode() {
-
+            alert($("#count").val());
             $(document).ready(function () {
                 $.ajax({
                     cache:true,
@@ -35,15 +35,17 @@
                     url:"http://localhost:8080/second/compus/regist/verifycode",
                     data:{"count":$("#count").val()},
                     async:true,
-                    dataType:"text",
-                    error:function (xmlhttpRequest) {
+                    contentType:"charset=UTF-8",
+                    dataType:"json",
+                    error:function (status, xmlhttpRequest) {
                         //这里对错误进行处理
                         var error = $.parseJSON(xmlhttpRequest.responseText);
                         alert("error" +error.msg);
                     },
-                    success:function (statusCode) {
-                        alert(statusCode);
-                    }
+                    success:function (data) {
+                        alert("success");
+                        alert(data.msg);
+                    },
                 });
             });
         }
@@ -54,30 +56,29 @@
                 $.ajax({
                     cache:true,
                     type:"POST",
-                    url:"http://localhost:8080/second/compus/regist",
+                    url:"http://localhost:8080/second/compus/regist/verify",
                     data:{
                         "count":$("#count").val(),
                         "verifycode":$("#verifycode").val()
                     },
                     async:true,
-                    dataType:"text",
+                    dataType:"json",
                     error:function (xmlhttpRequest) {
                         //这里对错误进行处理
+                        alert("error");
                         var error = $.parseJSON(xmlhttpRequest.responseText);
-                        alert("error" +error.msg);
+                        alert("error" +error);
                     },
-                    success:function (statusCode) {
-                        alert(statusCode);
+                    success:function (data) {
+                        alert("success" +data.code);
+//                       $("body").html(data);
+                        window.location.href = data.msg;
                     }
                 });
             });
         }
     </script>
-    <script type="text/javascript">
-        function test() {
-            alert("heeh");
-        };
-    </script>
+
 </head>
 <body>
 
@@ -98,9 +99,12 @@
                 <td><input type="text" id="verifycode" name="verifycode"/></td>
                 <td><button type="button" id="getverifycode" onclick="getVerifycode()" value="获取验证码">获取验证码</button></td>
             </tr>
-            <tr><td><button type="button"  id="submit" onclick="regist()" >注册</button></td></tr>
+            <tr><td><button type="button"  id="submit" onclick="regist()">注册</button></td></tr>
         </table>
     </form>
+
+    <button id="jump" onclick="jump()">跳转</button>
+    <a href="http://localhost:8080/second/compus/regist/jump"> 主页</a>
 
 </body>
 </html>
