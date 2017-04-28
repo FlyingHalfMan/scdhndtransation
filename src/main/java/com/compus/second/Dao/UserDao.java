@@ -34,9 +34,9 @@ public class UserDao {
     }
 
     @Transactional
-    public void delete(User user)
-    {
-        entityManager.remove(user);
+    public void delete(User user) {
+
+       // entityManager.remove(user);
     }
 
     public void update(User user)
@@ -51,8 +51,7 @@ public class UserDao {
      * @return
      * @throws Exception
      */
-    public User findById(Serializable userId) throws  UserException
-    {
+    public User findById(Serializable userId) throws  UserException {
         String sql = "select u from User as u where u.userId = :userid";
         Query query = entityManager.createQuery(sql).setParameter("userid",userId);
 

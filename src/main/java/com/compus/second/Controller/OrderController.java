@@ -150,8 +150,6 @@ public class OrderController extends BaseController {
        return new SuccessBean(200,"数据获取成功",null,orderBeans);
     }
 
-    // 删除订单
-
     /**
      * 删除订单
      *  http://localhost:8080/second/compus/delete?orderId=1232131

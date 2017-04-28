@@ -10,6 +10,7 @@ import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.List;
 
@@ -38,6 +39,7 @@ import java.util.List;
  */
 
 @Repository
+@Transactional
 public class CommodityDao {
 
     @PersistenceContext
@@ -49,12 +51,11 @@ public class CommodityDao {
      * @throws CommodityException
      */
 
-    public void add(Commodity commodity)throws CommodityException
-    {
+    public void add(Commodity commodity)throws CommodityException {
+
         try{
             entityManager.persist(commodity);
-        }catch (Exception e)
-        {
+        }catch (Exception e) {
             e.printStackTrace();
             throw new CommodityException(COMMODITY_EXCEPTION_TYPE.COMMODITY_EXCEPTION_TYPE_ADDFAILED);
         }
@@ -164,16 +165,16 @@ public class CommodityDao {
         String sql ="";
         switch (order){
             case Constant.COMMODITY_ORDER_BY_DATE_DESC:
-                sql = "select  c from Commodity  as c where c.userId =:userId and  order by c.publishDate desc ";
+                sql = "select  c from Commodity  as c where c.userId =:userId   order by c.publishDate desc ";
                 break;
             case Constant.COMMODITY_ORDER_BY_DATE_ASC:
-                sql = "select  c from Commodity  as c where c.userId =:userId and  order by c.publishDate asc ";
+                sql = "select  c from Commodity  as c where c.userId =:userId   order by c.publishDate asc ";
                 break;
             case Constant.COMMODITY_ORDER_BY_PRICE_DESC:
-                sql = "select  c from Commodity  as c where c.userId =:userId and  order by c.price desc ";
+                sql = "select  c from Commodity  as c where c.userId =:userId   order by c.price desc ";
                 break;
             case Constant.COMMODITY_ORDER_BY_PRICE_ASC:
-                sql = "select  c from Commodity  as c where c.userId =:userId and  order by c.price ASC ";
+                sql = "select  c from Commodity  as c where c.userId =:userId   order by c.price ASC ";
                 break;
             default:
                 sql = "select  c from Commodity  as c where c.userId =:userId";

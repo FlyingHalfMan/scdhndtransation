@@ -3,6 +3,7 @@ package com.compus.second.Controller.admin;
 import com.compus.second.Bean.CommodityBean;
 import com.compus.second.Bean.OrderBean;
 import com.compus.second.Bean.SuccessBean;
+import com.compus.second.Bean.UserBean;
 import com.compus.second.Constant;
 import com.compus.second.Controller.BaseController;
 import com.compus.second.Dao.CommodityDao;
@@ -27,6 +28,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
+import static org.springframework.web.bind.annotation.RequestMethod.GET;
+
 /**
  * Created by cai on 2017/3/18.
  */
@@ -45,15 +48,33 @@ public class AdminController extends BaseController {
     OrderDao orderDao;
 
     /**
+     *  管理员主页
+     */
+
+    @RequestMapping(path = "index",method = RequestMethod.GET)
+
+    public ModelAndView admin(){
+        return new ModelAndView("/admin/index",null);
+    }
+
+    /**
      *
      * 跳转到全部用户页面  http://localhost:8080/second/compus/admin/users
      * @return
      */
+
+
     @RequestMapping(path = "users")
     public ModelAndView users()
     {
-        return new ModelAndView("users",null);
+        return new ModelAndView("admin/user",null);
     }
+
+    @RequestMapping(path = "commodities")
+    public ModelAndView commodities(){return new ModelAndView("admin/commodities",null);}
+
+    @RequestMapping(path = "orders")
+    public ModelAndView orders(){return new ModelAndView("admin/orders",null);}
 
 
     /**
@@ -77,18 +98,11 @@ public class AdminController extends BaseController {
         /**
          * 管理员查看用户只显示用户的名称、手机号、邮箱、注册时间、性别
          */
-        List<Map<String,Object>> users = new ArrayList<Map<String, Object>>();
+        List<UserBean> users = new ArrayList<UserBean>();
         for(int i=0;i<userList.size();i++) {
             User signalUser = userList.get(i);
-            Map<String, Object> user = new HashMap<String, Object>();
-            user.put("id",i++);
-            user.put("userId",signalUser.getUserId());
-            user.put("userName",signalUser.getName());
-            user.put("gender",signalUser.getGender() ==null?"未设置":signalUser.getGender());
-            user.put("mobile",signalUser.getMobile() ==null?"未设置":signalUser.getMobile());
-            user.put("email",signalUser.getEmail()==null?"未设置":signalUser.getEmail());
-            user.put("registDate",signalUser.getRegistDate());
-            users.add(user);
+            UserBean userBean = new UserBean(signalUser,i+1);
+            users.add(userBean);
         }
         return new SuccessBean(200,"数据获取成功",null,users);
     }
@@ -100,17 +114,15 @@ public class AdminController extends BaseController {
      * @return
      */
     @RequestMapping(path = "user/delete")
-    public ModelAndView deleteUser(@RequestParam("user") final String userId){
+    @ResponseBody
+    public SuccessBean deleteUser(@RequestParam("user") final String userId){
 
         User user = userDao.findById(userId);
         if (user == null)
             throw new UserException(USER_EXCEPTOIN_TYPE.USER_EXCEPTOIN_TYPE_USER_NOT_FOUND);
         userDao.delete(user);
-        return new ModelAndView("users",null);
+        return new SuccessBean(200,"删除成功");
     }
-
-
-
 
 }
 

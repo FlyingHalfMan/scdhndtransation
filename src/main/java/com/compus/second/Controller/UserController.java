@@ -315,9 +315,4 @@ public class UserController extends  BaseController {
 
         return new SuccessBean(200,"数据查找成功",null,commodityBeans);
     }
-
-
-
-
-
 }

@@ -9,7 +9,9 @@ import com.compus.second.Dao.*;
 import com.compus.second.Exception.CommodityException;
 import com.compus.second.Exception.Enum.COMMODITY_EXCEPTION_TYPE;
 import com.compus.second.Exception.Enum.INVALID_EXCEPTION_TYPE;
+import com.compus.second.Exception.Enum.USER_EXCEPTOIN_TYPE;
 import com.compus.second.Exception.InvalidException;
+import com.compus.second.Exception.UserException;
 import com.compus.second.Table.*;
 import com.compus.second.Utils.EncryptUtil;
 import com.compus.second.Utils.ImageService;
@@ -32,7 +34,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("commodity")
-public class CommodityController {
+public class CommodityController extends BaseController{
 
     @Autowired
     private SortDao sortDao;
@@ -80,7 +82,7 @@ public class CommodityController {
     @ResponseBody
     public SuccessBean uploadPhoto(HttpServletRequest request,
                                    HttpServletResponse response,
-                                   @RequestParam("image") final CommonsMultipartFile image) throws IOException {
+                                   @RequestParam(value = "image") final CommonsMultipartFile image) throws IOException {
 
         // 获取session中的图片中的商品信息
         HttpSession session = request.getSession();
@@ -131,7 +133,7 @@ public class CommodityController {
 
         // 设置商品的分类信息
         commodity.setSortId(commodityBean.getSortId());                     // 设置商品的分类id
-        Sorts sorts = sortDao.getSortById(commodityBean.getCommodityId());
+        Sorts sorts = sortDao.getSortById(commodityBean.getSortId());
         commodity.setSortName(sorts.getSortName());
 
         commodity.setPublishDate(new Date());                               // 设置商品发布时间
@@ -192,8 +194,9 @@ public class CommodityController {
 
         // 设置返回参数
         User user = userDao.findById(commodity.getUserId());
+        if (user == null)
+            throw new UserException(USER_EXCEPTOIN_TYPE.USER_EXCEPTOIN_TYPE_USER_NOT_FOUND);
         CommodityBean commodityBean = new CommodityBean(commodity,commodityImages,user);
-
 
         return new SuccessBean(200,"商品信息获取成功",commodityBean,null);
     }
@@ -265,7 +268,7 @@ public class CommodityController {
      * @return
      */
 
-    @RequestMapping("update/number")
+    @RequestMapping(value = "update/number",method = RequestMethod.POST)
     @ResponseBody
     public SuccessBean updateCommodityNumbers(@RequestParam("number") final int number,
                                               @RequestParam("id") final String id){
@@ -442,6 +445,4 @@ public class CommodityController {
         CommodityBean commodityBean = new CommodityBean(commodity,images,user);
         return commodityBean;
     }
-
-
 }

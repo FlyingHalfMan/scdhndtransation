@@ -33,9 +33,8 @@ public class SortDao {
      * @param id
      * @return
      */
-    public Sorts getSortById(String id) {
-        Query query = entityManager.createQuery("select s from Sorts  as s where s.sortId =:id").setParameter("id",id);
-        return query.getResultList() == null ||query.getResultList().size() <1 ? null : (Sorts) query.getResultList().get(0);
+    public Sorts getSortById(int id) {
+       return  entityManager.find(Sorts.class,id);
     }
 
     public List<Sorts> listAllSorts(){

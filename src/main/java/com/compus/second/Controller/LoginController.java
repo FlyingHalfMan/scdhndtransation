@@ -1,6 +1,7 @@
 package com.compus.second.Controller;
 
 import com.compus.second.Bean.LoginBean;
+import com.compus.second.Bean.SuccessBean;
 import com.compus.second.Dao.UserDao;
 import com.compus.second.Exception.Enum.USER_EXCEPTOIN_TYPE;
 import com.compus.second.Exception.UserException;
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.ws.RequestWrapper;
 
 /**
  * Created by cai on 2017/3/15.
@@ -46,23 +48,24 @@ public class LoginController extends BaseController {
      *
      * @param request       http 请求
      * @param response      http 相应
-     * @param loginBean
      * @return
      */
 
     @RequestMapping(path = "/login", method = RequestMethod.POST)
-    public ModelAndView loginWithPwd(HttpServletRequest request,
-                                     HttpServletResponse response,
-                                     @RequestBody  LoginBean loginBean)  {
+    @ResponseBody
+    public SuccessBean loginWithPwd(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    @RequestParam("count") final String count,
+                                    @RequestParam("pwd") final String pwd)  {
 
         /**
          *  获取登录信息中的账号和密码，
          *  抛出账号没有登录
          */
-            User user = userDao.findByCount(loginBean.getCount());
+            User user = userDao.findByCount(count);
             if (user == null)
                 throw new UserException(USER_EXCEPTOIN_TYPE.USER_EXCEPTOIN_TYPE_USER_NOT_FOUND);
-            String enPwd = EncryptUtil.encrypt(user.getSalt(), loginBean.getPwd());
+            String enPwd = EncryptUtil.encrypt(user.getSalt(), pwd);
 
         /**
          * 密码错误，返回到页面
@@ -77,7 +80,7 @@ public class LoginController extends BaseController {
                 session.setAttribute("userId",user.getUserId());        // 用户的id
                 session.setAttribute("token",user.getToken());          // 用户的安全验证
                 session.setAttribute("role",user.getAuth());            // 用户的角色
-                return new ModelAndView("/index",null);
+                return new SuccessBean(200,"登录成功");
             }
 
     }

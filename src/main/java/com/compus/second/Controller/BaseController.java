@@ -19,7 +19,7 @@ import java.util.Map;
 public class BaseController {
 
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<ErrorBean> userExceptionHandler(UserException e)
+    public ResponseEntity<ErrorBean> userException(UserException e)
     {
         ErrorBean error  = new ErrorBean(e);
         return new ResponseEntity<ErrorBean>(error, HttpStatus.NOT_ACCEPTABLE);

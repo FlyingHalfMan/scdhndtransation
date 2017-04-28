@@ -36,6 +36,9 @@ public class EncryptUtil {
     public static  String randomString(){
         return RandomStringUtils.randomAlphabetic(16);
     }
+    public static  String randomString(int len){
+        return RandomStringUtils.randomAlphabetic(len);
+    }
 
     public static String salt(){
         return RandomStringUtils.randomAlphabetic(32);

@@ -33,6 +33,10 @@
     <mvc:resources mapping="/nav.html" location="/WEB-INF/views/nav.html"/>
     <mvc:resources mapping="/search.html" location="/WEB-INF/views/search.html"/>
     <mvc:resources mapping="/tail.html" location="/WEB-INF/views/tail.html"/>
+    <mvc:resources mapping="/admin/assets/**/**.js" location="/WEB-INF/views/admin/assets/js"/>
+    <mvc:resources mapping="/admin/assets/css/**.css" location="WEB-INF/views/admin/assets/css/"/>
+    <mvc:resources mapping="/admin/assets/**/**" location="WEB-INF/views/admin/assets/"/>
+    <mvc:resources mapping="/admin/**.html" location="WEB-INF/views/admin/"/>
     <!--<mvc:resources mapping="/**/*.jsp" location="WEB-INF"/>-->
     <!--<mvc:resources mapping="/Resources/bootstrap-3.3.0/**/**" location="/WEB-INF/Resources/bootstrap-3.3.0/"/>-->
 
@@ -66,6 +70,13 @@
         <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
         <property name="prefix" value="/WEB-INF/views/"/>
         <property name="suffix" value=".html"/>
+    </bean>
+
+    <!-- 多部分文件上传 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="104857600" />
+        <property name="maxInMemorySize" value="4096" />
+        <property name="defaultEncoding" value="UTF-8"></property>
     </bean>
 
     <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"-->

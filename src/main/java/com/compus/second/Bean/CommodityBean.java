@@ -25,6 +25,7 @@ public class CommodityBean implements Serializable {
     private String userId;      // 用户id
     private String publishDate; // 发布的日期
     private String userName;    // 用户名
+    private int    numbers;
 
     public CommodityBean(){};
 
@@ -39,6 +40,7 @@ public class CommodityBean implements Serializable {
         this.publishDate = Utils.parseDateToString(commodity.getPublishDate(), Constant.dateFormate);
         this.userId = user.getUserId();
         this.userName = user.getName();
+        this.numbers =commodity.getCount();
     }
 
 
@@ -121,5 +123,21 @@ public class CommodityBean implements Serializable {
 
     public void setSortId(int sortId) {
         this.sortId = sortId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public int getNumbers() {
+        return numbers;
+    }
+
+    public void setNumbers(int numbers) {
+        this.numbers = numbers;
     }
 }

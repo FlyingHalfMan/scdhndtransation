@@ -1,21 +1,19 @@
 package com.compus.second.Bean;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
  * Created by cai on 2017/4/4.
  */
-public class CartBean {
+public class CartBean implements Serializable{
 
     private int   cardId;
     private float price;        //  商品价格
     private int   numbers;      //  商品数量
     private List<CommodityBean> commodityBeans;
 
-
-    public int getCardId() {
-        return cardId;
-    }
+    public int getCardId() { return cardId;}
 
     public void setCardId(int cardId) {
         this.cardId = cardId;

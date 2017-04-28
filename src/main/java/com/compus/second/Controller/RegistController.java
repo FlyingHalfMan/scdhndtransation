@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -183,17 +180,19 @@ public class RegistController extends BaseController {
             throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_COUNT);
 
         String salt = (String) request.getSession().getAttribute("salt");
-        String code = (String) request.getSession().getAttribute(count);
-        Date   date = Utils.parseStringToDate((String)request.getSession().getAttribute(Constant.SESSION_REGIST_EXPIRED_DATE)
-                                                                                       ,"yyyy-MM-dd HH:mm:ss.SSS");
 
+        String code = (String) request.getSession().getAttribute(count);
         if (code == null )
             //没有发送过验证码
             throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE_NOT_SEND);
         else if(!code.equals(verifycode))
             // 验证码错误
             throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE);
-        else if(date.before(new Date())) {
+
+        String dateStr = (String)request.getSession().getAttribute(Constant.SESSION_REGIST_EXPIRED_DATE);
+        Date   date = Utils.parseStringToDate(dateStr,"yyyy-MM-dd HH:mm:ss.SSS");
+
+        if(date.before(new Date())) {
             //验证码失效
             throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE);
         }
@@ -206,11 +205,11 @@ public class RegistController extends BaseController {
         cookie.setMaxAge(30 *60);
         response.addCookie(cookie);
         response.flushBuffer();
-        return new SuccessBean(200,"http://localhost:8080/second/compus/password");
+        return new SuccessBean(200,"http://localhost:8080/second/regist/password?s="+salt);
     }
 
 
-    @RequestMapping("password")
+    @RequestMapping("regist/password")
     public String goToSetPassword(HttpServletRequest request,
                                   HttpServletResponse response){
         HttpSession session = request.getSession();
@@ -218,9 +217,45 @@ public class RegistController extends BaseController {
             return "redirect:404.html";
         }
 
+        return "password";
+    }
+
+    @RequestMapping(path = "regist/password",method = RequestMethod.POST)
+    @ResponseBody
+    public SuccessBean updatePassword(@RequestParam("password") final String password,
+                                 @RequestParam("repeat") final String repeat,
+                                 @SessionAttribute(Constant.SESSION_REGIST_COUNT) final String count,
+                                 @SessionAttribute(Constant.SESSION_SALT) final String salt,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response){
+
+        if (password.length() < 6)
+            throw new InvalidException(403,"密码长度不足6位");
+        if (!password.equals(repeat))
+            throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_DIRRERENT_PASSWORD);
+
+
+        User user = new User();
+        user.setSalt(salt);
+        user.setRegistDate(Utils.parseDateToString(new Date(),Constant.dateFormate));
+        user.setToken(EncryptUtil.encrypt(salt,password));
+        user.setAuth(1);
+        user.setEmail(count);
+        user.setUserId(EncryptUtil.randomString(8));
+        user.setGender("保密");
+        user.setName("用户" + user.getUserId());
+        userDao.addUser(user);
+        HttpSession session =  request.getSession();
+        session.setAttribute("userid",user.getUserId());
+        session.setAttribute("count",user.getEmail());
+        session.setAttribute("token",user.getToken());
+        session.setAttribute("role",user.getAuth());
+        session.setMaxInactiveInterval(6 * 60 * 60 * 1000);
+
         session.removeAttribute(Constant.SESSION_REGIST_COUNT);
         session.removeAttribute(Constant.SESSION_REGIST_VERIFYCODE);
         session.removeAttribute(Constant.SESSION_REGIST_EXPIRED_DATE);
-        return "password";
+        return new SuccessBean(200,"注册成功");
     }
+
 }

@@ -1,18 +1,13 @@
 package com.compus.second.Controller;
 
-import com.compus.second.Utils.EncryptUtil;
-import com.compus.second.Utils.Utils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import java.text.ParseException;
-import java.util.Date;
 
 /**
  * Created by cai on 2017/3/15.
@@ -33,6 +28,6 @@ public class HomeController extends BaseController {
         /**
          * 1. 判断是否存在cookie
          */
-        return new ModelAndView("index",null);
+        return new ModelAndView("URL",null);
     }
 }

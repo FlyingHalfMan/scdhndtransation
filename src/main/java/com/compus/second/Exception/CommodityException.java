@@ -9,11 +9,10 @@ import com.compus.second.Table.Commodity;
 public class CommodityException extends BaseException {
 
 
-    public CommodityException(COMMODITY_EXCEPTION_TYPE type)
-    {
+    public CommodityException(COMMODITY_EXCEPTION_TYPE type) {
         super(type);
-        this.code =type.getCode();
-        this.msg = type.getMsg();
+        super.code =type.getCode();
+        super.msg = type.getMsg();
     }
 
     public CommodityException(int code, String msg) {

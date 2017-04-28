@@ -7,12 +7,14 @@ import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
  * Created by cai on 2017/3/17.
  */
 @Repository
+@Transactional
 public class CommodityImageDao {
 
     @PersistenceContext
