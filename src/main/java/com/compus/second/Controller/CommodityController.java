@@ -1,7 +1,5 @@
 package com.compus.second.Controller;
 
-import antlr.StringUtils;
-import antlr.Utils;
 import com.compus.second.Bean.CommodityBean;
 import com.compus.second.Bean.SuccessBean;
 import com.compus.second.Constant;
@@ -63,7 +61,7 @@ public class CommodityController extends BaseController{
         HttpSession session = request.getSession();
         if(session==null) session = request.getSession(true);
         session.setAttribute("commodity",commodityId);
-        return new ModelAndView("sell");
+        return new ModelAndView("shop/sell");
     }
 
 
@@ -88,22 +86,9 @@ public class CommodityController extends BaseController{
         HttpSession session = request.getSession();
         String key = (String) session.getAttribute("commodity");
         String imageName = ImageService.uploadImageToImageServer(image, key);
-        if (session.getAttribute("image01") == null) {
-            session.setAttribute("image01", imageName);
-        } else if (session.getAttribute("image02") == null) {
-            session.setAttribute("image02", imageName);
-        }
-        else if(session.getAttribute("image03")== null) {
-            session.setAttribute("image03",imageName);
-        }
-        else {
-            // 图片已经超出添加的最大数量
-            throw new CommodityException(COMMODITY_EXCEPTION_TYPE.COMMODITY_EXCEPTION_TYPE_UNABLETOADDIMAGE);
-        }
-        // 这边图片不进行保存等到下一步添加商品具体信息的时候再添加
 
         //返回保存成功信息
-        return new SuccessBean(200,"图片添加成功");
+        return new SuccessBean(200,"图片添加成功",imageName,null);
 
     }
 
@@ -111,14 +96,18 @@ public class CommodityController extends BaseController{
      * 用户上传商品的信息
      * @param request
      * @param response
-     * @param commodityBean
      * @return
      */
     @RequestMapping(path = "add",method = RequestMethod.POST)
     @ResponseBody
     public SuccessBean addCommodity(HttpServletRequest request,
                                     HttpServletResponse response,
-                                    @RequestBody CommodityBean commodityBean) {
+                                    @RequestParam("title")      final String title,
+                                    @RequestParam("describe")   final String desc,
+                                    @RequestParam("sortName")   final String sortName,
+                                    @RequestParam("price")      final float price,
+                                    @RequestParam(value = "images",required = false)     final List<String> images,
+                                    @RequestParam("numbers")    final int numbers) {
         /**
          * 用户上传数据的时候，先从session 中去获取commodityId 和已经上传的图片。
          */
@@ -127,15 +116,17 @@ public class CommodityController extends BaseController{
         // 检查商品的数据是否合理
         Commodity commodity = new Commodity();
         commodity.setCommodityId(commodityId);                              // 设置商品的id
-        commodity.setPrice(commodityBean.getPrice());                       // 设置商品的价格
-        commodity.setTitle(commodityBean.getTitle());                       // 设置商品的标题
-        commodity.setDetail(commodityBean.getDescribe());                   // 设置商品的描述
+        commodity.setCommodityId(EncryptUtil.randomString(16));
+        commodity.setPrice(price);                                          // 设置商品的价格
+        commodity.setTitle(title);                                          // 设置商品的标题
+        commodity.setDetail(desc);                                          // 设置商品的描述
+        commodity.setCount(numbers);                                        // 设置商品数量
 
         // 设置商品的分类信息
-        commodity.setSortId(commodityBean.getSortId());                     // 设置商品的分类id
-        Sorts sorts = sortDao.getSortById(commodityBean.getSortId());
+                            // 设置商品的分类id
+        Sorts sorts = sortDao.getSortByName(sortName);
         commodity.setSortName(sorts.getSortName());
-
+        commodity.setSortId(sorts.getId());
         commodity.setPublishDate(new Date());                               // 设置商品发布时间
         commodity.setStatus(Constant.COMMODITY_STATUS_ON_SALE);             // 设置商品的状态
 

@@ -68,7 +68,7 @@ public class ImageService {
                 client.shutdown();
             }
         }
-        return imageName;
+        return imageName +ext;
     }
 
     // 验证码字符集

@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="assets/img/favicon.png">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+	<title>Paper Dashboard by Creative Tim</title>
+
+	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!-- Bootstrap core CSS     -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Animation library for notifications   -->
+    <link href="assets/css/animate.min.css" rel="stylesheet"/>
+
+    <!--  Paper Dashboard core CSS    -->
+    <link href="assets/css/paper-dashboard.css" rel="stylesheet"/>
+
+    <!--  CSS for Demo Purpose, don't include it in your project     -->
+    <link href="assets/css/demo.css" rel="stylesheet" />
+
+    <!--  Fonts and icons     -->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+    <link href="assets/css/themify-icons.css" rel="stylesheet">
+
+    <script type="text/javascript">
+
+        var offset = 0;
+        var limit  = 10;
+        var order = 0;
+
+        $(document).ready(function () {
+
+            loadData(0,0,10);
+        })
+        function loadData(order,off, lim) {
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: "http://localhost:8080/second/commodity/commodities?order="+order+"&offset=" + off + "&limit=" + lim,
+                data: null,
+                async: true,
+                contentType: "charset=UTF-8",
+                dataType: "json",
+                error: function (xmlhttpRequest) {
+                    //这里对错误进行处理
+                    var resp = xmlhttpRequest.responseText;
+                    alert(resp);
+                },
+
+                success: function (data) {
+                    var array = data.models;
+                    offset = off;
+                    limit = lim;
+                    users = array;
+                    updateTableView(array);
+                }
+            });
+        }
+
+        function updateTableView(array) {
+            var table = document.getElementById('data-table');
+            $('#data-table tbody').remove();
+
+            var tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+
+            for (var i = 0; i < array.length; i++) {
+                var model = array[i];
+                var row = table.insertRow(table.rows.length);
+
+                var cell0 = row.insertCell(0);
+                cell0.innerHTML = i + 1;
+
+                var cell1 = row.insertCell(1);
+                var detail_link = document.createElement("a");
+                var name_text = document.createTextNode(model.title);
+                detail_link.appendChild(name_text);
+                // a_node.setAttribute('href','http://localhost:8080/second/admin/user/delete?user='+model.userId);
+                detail_link.setAttribute("onclick", 'viewDetail(' + (i + 1) + ')');
+                cell1.appendChild(detail_link);
+
+                var cell2 = row.insertCell(2);
+                var sortLink = document.createElement('a');
+                var sortText = document.createTextNode(model.sortName);
+                sortLink.appendChild(sortText);
+                cell2.appendChild(sortLink);
+
+
+                var cell3 = row.insertCell(3);
+                cell3.innerHTML = model.price;
+
+                var cell4 = row.insertCell(4);
+                cell4.innerHTML = model.numbers;
+
+                var cell5 = row.insertCell(5);
+                cell5.innerHTML = model.status;
+
+                var cell6 = row.insertCell(6);
+                var userLink = document.createElement('a');
+                var userNode = document.createTextNode(model.userName);
+                userLink.setAttribute("href","http://localhost:8080/second/user/profile.html?userId="+model.userId);
+                userLink.setAttribute("target","_blanket");
+                userLink.appendChild(userNode);
+                cell6.appendChild(userLink);
+
+                var cell7 =row.insertCell(7);
+                cell7.innerHTML = model.publishDate;
+
+
+
+                var cell8 = row.insertCell(8);
+
+                var a_node = document.createElement("a");
+                var a_text = document.createTextNode("删除商品");
+                a_node.appendChild(a_text);
+                // a_node.setAttribute('href','http://localhost:8080/second/admin/user/delete?user='+model.userId);
+                a_node.setAttribute("onclick", 'deleteCommodity(' + (i + 1) + ')');
+                cell8.appendChild(a_node);
+                cell8.appendChild(document.createElement("br"));
+
+                if(model.status != '商品已经下架') {
+                    var off_link = document.createElement('a');
+                    off_link.appendChild(document.createTextNode("下架商品"));
+                    off_link.setAttribute("onclick","offSell("+model.commodityId+')');
+                    cell8.appendChild(off_link);
+//                    cell7.appendChild(document.createElement("br"));
+
+                }
+                else if(model.status == "商品已经下架"){
+                    var off_link = document.createElement('a');
+                    off_link.appendChild(document.createTextNode("重新出售"));
+                    off_link.setAttribute("onclick","sellAgain("+model.commodityId+')');
+                    cell8.appendChild(off_link);
+                }
+                $('#data-table tbody').append(row);
+            }
+        }
+
+    </script>
+
+
+</head>
+<body>
+
+<div class="wrapper">
+	<div class="sidebar" data-background-color="white" data-active-color="danger">
+
+    <!--
+		Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+		Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+	-->
+
+    	<div class="sidebar-wrapper">
+            <div class="logo">
+                <a href="#" class="simple-text">
+                    校园二手管理后台
+                </a>
+            </div>
+
+            <ul class="nav">
+                <li >
+                    <a href="index.html">
+                        <i class="ti-panel"></i>
+                        <p>主页</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="user.html">
+                        <i class="ti-user"></i>
+                        <p>用户管理</p>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="commodities.html">
+                        <i class="ti-view-list-alt"></i>
+                        <p>商品管理</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="orders.html">
+                        <i class="ti-view-list-alt"></i>
+                        <p>订单管理</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="profile.html">
+                        <i class="ti-text"></i>
+                        <p>管理员设置</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="logout">
+                        <i class="ti-pencil-alt2"></i>
+                        <p>注销</p>
+                    </a>
+                </li>
+            </ul>
+    	</div>
+    </div>
+
+    <div class="main-panel">
+		<nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar bar1"></span>
+                        <span class="icon-bar bar2"></span>
+                        <span class="icon-bar bar3"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Table List</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="ti-panel"></i>
+								<p>Stats</p>
+                            </a>
+                        </li>
+                        <li class="dropdown">
+                              <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                    <i class="ti-bell"></i>
+                                    <p class="notification">5</p>
+									<p>Notifications</p>
+									<b class="caret"></b>
+                              </a>
+                              <ul class="dropdown-menu">
+                                <li><a href="#">Notification 1</a></li>
+                                <li><a href="#">Notification 2</a></li>
+                                <li><a href="#">Notification 3</a></li>
+                                <li><a href="#">Notification 4</a></li>
+                                <li><a href="#">Another notification</a></li>
+                              </ul>
+                        </li>
+						<li>
+                            <a href="#">
+								<i class="ti-settings"></i>
+								<p>Settings</p>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="header">
+                                <h4 class="title">商品管理</h4>
+                                <form class="form-search form-inline">
+                                    <input class=" search-query input-group-lg" type="text" />
+                                    <button class="btn btn-success" contenteditable="true" type="submit">查找</button>
+                                    <ul class="list-inline" contenteditable="true">
+                                        <li><a >出售时间</a> </li>
+                                        <li><a>价格排序</a></li>
+                                        <li><a>用户排序</a></li>
+                                        <li><a>状态排序</a></li>
+                                    </ul>
+                                </form>
+                            </div>
+                            <div class="content table-responsive table-full-width">
+                                <table class="table table-striped" id="data-table">
+                                    <thead>
+                                        <th>编号</th>
+                                    	<th>商品标题</th>
+                                    	<th>商品分类</th>
+                                    	<th>出售价格</th>
+                                    	<th>商品剩余数量</th>
+                                        <th>商品状态</th>
+                                        <th>出售用户</th>
+                                        <th>上架时间</th>
+                                        <th>操作</th>
+                                    </thead>
+                                    <tbody>
+
+                                    </tbody>
+                                </table>
+                                <div>
+                                    <ul class="pager">
+                                        <li><a href="#" id="pre-page" onclick="loadprepage(offset,limit)">上一页</a></li>
+                                        <li><a href="#" id="next-page" onclick="loadNextPage()">下一页</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="container-fluid">
+                <nav class="pull-left">
+                    <ul>
+
+                        <li>
+                            <a href="#">
+                                Creative Tim
+                            </a>
+                        </li>
+                        <li>
+                            <a href="http://blog.creative-tim.com">
+                               Blog
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#/license">
+                                Licenses
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+				<div class="copyright pull-right">
+                    &copy; <script>document.write(new Date().getFullYear())</script>, made with <i class="fa fa-heart heart"></i> by <a href="#">Creative Tim</a>. More Templates <a href="http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a>
+                </div>
+            </div>
+        </footer>
+
+
+    </div>
+</div>
+
+
+</body>
+
+    <!--   Core JS Files   -->
+    <script src="assets/js/jquery-1.10.2.js" type="text/javascript"></script>
+	<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
+
+	<!--  Checkbox, Radio & Switch Plugins -->
+	<script src="assets/js/bootstrap-checkbox-radio.js"></script>
+
+	<!--  Charts Plugin -->
+	<script src="assets/js/chartist.min.js"></script>
+
+    <!--  Notifications Plugin    -->
+    <script src="assets/js/bootstrap-notify.js"></script>
+
+    <!--  Google Maps Plugin    -->
+    <!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>-->
+
+    <!-- Paper Dashboard Core javascript and methods for Demo purpose -->
+	<script src="assets/js/paper-dashboard.js"></script>
+
+	<!-- Paper Dashboard DEMO methods, don't include it in your project! -->
+	<script src="assets/js/demo.js"></script>
+
+
+</html>

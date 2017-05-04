@@ -53,10 +53,11 @@ public class LoginController extends BaseController {
 
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     @ResponseBody
-    public SuccessBean loginWithPwd(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    @RequestParam("count") final String count,
-                                    @RequestParam("pwd") final String pwd)  {
+    public SuccessBean loginWithPwd(@RequestParam("count") final String count,
+                                    @RequestParam("pwd") final String pwd,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response
+                                    )  {
 
         /**
          *  获取登录信息中的账号和密码，
@@ -75,12 +76,18 @@ public class LoginController extends BaseController {
                         USER_EXCEPTOIN_TYPE.USER_EXCEPTOIN_TYPE_WRONGPWD.getMsg());
             }
             else {
-
+                String url ;
+                if (user.getAuth() >=1){
+                   url = "http://localhost:8080/second/admin/index.html";
+                }
+                else {
+                    url = "http://localhost:8080/second/shop/index.html";
+                }
                 HttpSession session = request.getSession();
                 session.setAttribute("userId",user.getUserId());        // 用户的id
                 session.setAttribute("token",user.getToken());          // 用户的安全验证
                 session.setAttribute("role",user.getAuth());            // 用户的角色
-                return new SuccessBean(200,"登录成功");
+                return new SuccessBean(200,"登录成功",url,null);
             }
 
     }

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -19,13 +20,14 @@ import java.util.Map;
 public class BaseController {
 
     @ExceptionHandler(UserException.class)
-    public ResponseEntity<ErrorBean> userException(UserException e)
-    {
+    @ResponseBody
+    public ResponseEntity<ErrorBean> userException(UserException e) {
         ErrorBean error  = new ErrorBean(e);
         return new ResponseEntity<ErrorBean>(error, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(OrderException.class)
+    @ResponseBody
     public ResponseEntity<ErrorBean> orderException(OrderException e)
     {
         ErrorBean error  = new ErrorBean(e);
@@ -34,6 +36,7 @@ public class BaseController {
 
 
     @ExceptionHandler(CartException.class)
+    @ResponseBody
     public ResponseEntity<ErrorBean> cartException(CartException e)
     {
         ErrorBean error  = new ErrorBean(e);
@@ -41,6 +44,7 @@ public class BaseController {
     }
 
     @ExceptionHandler(CommodityException.class)
+    @ResponseBody
     public ResponseEntity<ErrorBean> commodityException(CommodityException e)
     {
         ErrorBean error  = new ErrorBean(e);
@@ -48,6 +52,7 @@ public class BaseController {
     }
 
     @ExceptionHandler(InternalServerErrorException.class)
+    @ResponseBody
     public ResponseEntity<ErrorBean> internalServerErrorException(InternalServerErrorException e)
     {
         ErrorBean error  = new ErrorBean(e);
@@ -55,13 +60,14 @@ public class BaseController {
     }
 
     @ExceptionHandler(InvalidException.class)
-    public ResponseEntity<ErrorBean> invalidException(InvalidException e)
-    {
+    @ResponseBody
+    public ResponseEntity<ErrorBean> invalidException(InvalidException e) {
         ErrorBean error  = new ErrorBean(e);
         return new ResponseEntity<ErrorBean>(error, HttpStatus.NOT_ACCEPTABLE);
     }
 
     @ExceptionHandler(IOException.class)
+    @ResponseBody
     public ResponseEntity<ErrorBean> ioException(IOException e){
 
         ErrorBean error  = new ErrorBean(e);

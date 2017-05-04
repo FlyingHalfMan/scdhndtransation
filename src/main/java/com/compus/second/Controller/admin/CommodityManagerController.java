@@ -1,5 +1,6 @@
 package com.compus.second.Controller.admin;
 
+import com.compus.second.Bean.SuccessBean;
 import com.compus.second.Dao.CommodityDao;
 import com.compus.second.Table.Commodity;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +36,8 @@ public class CommodityManagerController {
      * @param limit
      */
     @RequestMapping(path = "commodites?search={search}sort={sort}&asc={asc}&sold={sold}&offset={offset}&limit={limit}")
-    public ModelAndView listAllCommodities(@RequestParam("search")  String     search,
+    @ResponseBody
+    public SuccessBean listAllCommodities(@RequestParam("search")  String     search,
                                            @RequestParam("sort")    int        sort,
                                            @RequestParam("asc")     boolean    asc,
                                            @RequestParam("sold")    boolean    sold,
@@ -43,14 +46,13 @@ public class CommodityManagerController {
                                            HttpServletRequest request,
                                            HttpServletResponse response)
     {
-        List<Commodity> commodityList = new ArrayList<Commodity>();
+        List<Commodity> commodityList = null;
         if (limit ==0) limit =offset +10;  // 如果没有填写limit 默认搜索长度是每次10条
         // 空搜索默认搜索全部
-        if (search == null && sort ==0)
-        {
-            commodityDao.listCommodities(offset,limit);
+        if (search == null && sort ==0) {
+            commodityList = commodityDao.listCommodities(offset,limit);
         }
 
-        return new ModelAndView("",null);
+        return new SuccessBean(200,"",null,commodityList);
     }
 }

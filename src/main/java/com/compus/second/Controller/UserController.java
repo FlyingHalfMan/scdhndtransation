@@ -48,7 +48,7 @@ public class UserController extends  BaseController {
     @Autowired
     private CommodityImageDao commodityImageDao;
 
-    @RequestMapping(path = "userprofile")
+    @RequestMapping(path = "profile")
     public ModelAndView goToProfilePage() {
 
         return new ModelAndView("profile",null);
@@ -62,12 +62,12 @@ public class UserController extends  BaseController {
      * @return
      * @throws UserException
      */
-    @RequestMapping(path = "profile")
+    @RequestMapping("")
     public SuccessBean getUserInormationView(HttpServletRequest  request,
                                                 HttpServletResponse response)throws UserException{
         HttpSession session = request.getSession();
         String userId = (String) session.getAttribute("userId");
-       User user =  userDao.findById(userId);
+        User user =  userDao.findById(userId);
        if (user == null)
            throw new UserException(USER_EXCEPTOIN_TYPE.USER_EXCEPTOIN_TYPE_USER_NOT_FOUND);
         Map<String,User> model = new HashMap<String, User>();

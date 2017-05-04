@@ -16,7 +16,7 @@ import java.text.ParseException;
 public class HomeController extends BaseController {
 
 
-    @RequestMapping(path = "/index",method = RequestMethod.GET)
+    @RequestMapping(path = "shop/index",method = RequestMethod.GET)
     public ModelAndView index(HttpServletRequest request, HttpServletResponse response) throws ParseException {
         /**
          * 本网站全部要求登录后使用，为了防止用户通过使用直接输入网址的方式访问某些特殊网页，使用拦截器AuthenticateIntecaptor 对所有请求拦截
@@ -28,6 +28,6 @@ public class HomeController extends BaseController {
         /**
          * 1. 判断是否存在cookie
          */
-        return new ModelAndView("URL",null);
+        return new ModelAndView("shop/index",null);
     }
 }

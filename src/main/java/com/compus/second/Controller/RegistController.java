@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -171,10 +172,14 @@ public class RegistController extends BaseController {
 
     @RequestMapping(path = "regist/verify",method = RequestMethod.POST)
     @ResponseBody
-    public SuccessBean verifyCount(@RequestParam("count") final String count,
-                              @RequestParam("verifycode") final String verifycode,
-                              HttpServletRequest request,
-                              HttpServletResponse response) throws ParseException, IOException {
+    public SuccessBean verifyCount(@RequestParam("count")       final String count,
+                                   @RequestParam("verifycode")  final String verifycode,
+                                   @RequestParam("userName")    final String userName,
+                                   @RequestParam("password")    final String password,
+                                   @RequestParam("repeat")      final String repeat,
+                                    HttpServletRequest request,
+                                    HttpServletResponse response)
+            throws ParseException, IOException {
         // 验证账号的有效性
         if(!Utils.isRightMobile(count) && !Utils.isRightEmail(count))
             throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_COUNT);
@@ -197,15 +202,40 @@ public class RegistController extends BaseController {
             throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_VERIFYCODE);
         }
 
+        // 验证密码是否有效
+        if (password.length() < 6)
+            throw new InvalidException(403,"无效的密码长度");
+        if (!password.equals(repeat))
+            throw new InvalidException(INVALID_EXCEPTION_TYPE.INVALID_EXCEPTION_DIRRERENT_PASSWORD);
+
+        // 验证用户名是否有效
+        if (!Utils.isRightName(userName))
+            throw new InvalidException(403,"无效的用户名");
+
+        // 验证用户名是否重复
+        List<User> userList =  userDao.findUserByUserName(userName);
+        if (userList !=null && userList.size() >= 1)
+            throw new InvalidException(403,"用户名已经被使用");
+
+        User user  = new User();
+        if (Utils.isRightEmail(count))
+            user.setEmail(count);
+        else if (Utils.isRightMobile(count));
+        user.setSalt(EncryptUtil.salt());
+        user.setToken(EncryptUtil.encrypt(user.getSalt(),password));
+        user.setName(userName);
+        user.setGender("保密");
+        user.setUserId(EncryptUtil.randomString(16));
+        user.setAuth(0);
+        userDao.addUser(user);
+
         //将salt 写入到cookie中
-        Cookie countCookie = new Cookie(Constant.SESSION_REGIST_COUNT,count);
-        countCookie.setMaxAge(30*60);
-        response.addCookie(countCookie);
-        Cookie cookie = new Cookie(Constant.SESSION_SALT,salt);
-        cookie.setMaxAge(30 *60);
-        response.addCookie(cookie);
-        response.flushBuffer();
-        return new SuccessBean(200,"http://localhost:8080/second/regist/password?s="+salt);
+        HttpSession session = request.getSession();
+        session.setAttribute("userId",user.getUserId());
+        session.setAttribute("userName",user.getName());
+        session.setAttribute("token",user.getToken());
+        session.setAttribute("role",user.getAuth());
+        return new SuccessBean(200,"","http://localhost:8080/seond/index?uid="+user.getUserId()+"&toke="+user.getToken(),null);
     }
 
 
