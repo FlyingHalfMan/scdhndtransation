@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+
+    <title>Paper Dashboard by Creative Tim</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'/>
+    <meta name="viewport" content="width=device-width"/>
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <!-- Bootstrap core CSS     -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Animation library for notifications   -->
+    <link href="assets/css/animate.min.css" rel="stylesheet"/>
+
+    <!--  Paper Dashboard core CSS    -->
+    <link href="assets/css/paper-dashboard.css" rel="stylesheet"/>
+
+    <!--  CSS for Demo Purpose, don't include it in your project     -->
+    <link href="assets/css/demo.css" rel="stylesheet"/>
+
+    <!--  Fonts and icons     -->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+    <link href="assets/css/themify-icons.css" rel="stylesheet">
+
+
+    <script type="text/javascript">
+        var offset = 0;
+        var limit = 10;
+        var users = null;
+
+        function loadData(off, lim) {
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: "http://localhost:8080/second/admin/listusers?offset=" + off + "&limit=" + lim,
+                data: null,
+                async: true,
+                contentType: "charset=UTF-8",
+                dataType: "json",
+                error: function (xmlhttpRequest) {
+                    //这里对错误进行处理
+                    var resp = xmlhttpRequest.responseText;
+                    alert($.parseJSON(resp).msg);
+
+                },
+
+                success: function (data) {
+                    var array = data.models;
+                    offset = off;
+                    limit = lim;
+                    users = array;
+                    updateTableView(array);
+                }
+            });
+        }
+
+        $(document).ready(function () {
+            loadData(0, 10);
+        });
+
+        function loadprepage(off, lim) {
+            if (off == 0) off == 0;
+            else off -= 10;
+            if (lim == 10) lim == 10;
+            else lim -= 10;
+            loadData(off, lim);
+            return false;
+        }
+
+        function loadNextPage() {
+
+            loadData(offset + 10, limit + 10);
+            return false;
+        }
+
+
+        function deleteUser(id) {
+            alert(id);
+            $.ajax({
+                cache: true,
+                type: "GET",
+                url: "http://localhost:8080/second/admin/user/delete?user=" + users[id - 1].userId,
+                data: null,
+                async: true,
+                contentType: "charset=UTF-8",
+                dataType: "json",
+                error: function (xmlhttpRequest) {
+                    //这里对错误进行处理
+                    var resp = xmlhttpRequest.responseText;
+                    alert(resp);
+
+                },
+                success: function (data) {
+                    alert(data.msg);
+                    users.splice(id - 1, 1);
+                    updateTableView(users);
+                }
+            });
+            return false;
+
+        }
+        function updateTableView(array) {
+            var table = document.getElementById('data-table');
+            $('#data-table tbody').remove();
+
+            var tbody = document.createElement("tbody");
+            table.appendChild(tbody);
+            var clrArray = ["info", "warning", "error", "success"];
+
+            for (var i = 0; i < array.length; i++) {
+                var model = array[i];
+
+                var index = Math.floor(Math.random() * 3 + 1);
+                var row = table.insertRow(table.rows.length);
+                row.setAttribute("class", clrArray[index]);
+                var cell0 = row.insertCell(0);
+                cell0.innerHTML = i + 1;
+
+                var cell1 = row.insertCell(1);
+                var detail_link = document.createElement("a");
+                var name_text = document.createTextNode(model.userName);
+                detail_link.appendChild(name_text);
+                // a_node.setAttribute('href','http://localhost:8080/second/admin/user/delete?user='+model.userId);
+                detail_link.setAttribute("onclick", 'viewDetail(' + (i + 1) + ')');
+                cell1.appendChild(detail_link);
+
+                var cell2 = row.insertCell(2);
+                cell2.innerHTML = model.userGender;
+
+                var cell3 = row.insertCell(3);
+                cell3.innerHTML = model.mobile;
+
+                var cell4 = row.insertCell(4);
+                cell4.innerHTML = model.email;
+
+                var cell5 = row.insertCell(5);
+                cell5.innerHTML = model.role;
+
+                var cell6 = row.insertCell(6);
+                cell6.innerHTML = model.registDate;
+
+                var cell7 = row.insertCell(7);
+                var a_node = document.createElement("a");
+                var a_text = document.createTextNode("删除");
+                a_node.appendChild(a_text);
+                // a_node.setAttribute('href','http://localhost:8080/second/admin/user/delete?user='+model.userId);
+                a_node.setAttribute("onclick", 'deleteUser(' + (i + 1) + ')');
+                cell7.appendChild(a_node);
+                $('#data-table tbody').append(row);
+            }
+        }
+
+        function viewDetail(index) {
+            var user_div = document.getElementById('users');
+           // user_div.style.width = '550px';
+            var user = users[index];
+            var url = "http://localhost:8080/second/admin/userDetail.html?" +user.userId;
+            //$('user-detail').load(url);
+
+//            $.ajax({
+//                cache: true,
+//                type: "GET",
+//                url: url,
+//                data: null,
+//                async: true,
+//                contentType: "charset=UTF-8",
+//                dataType: "html",
+//                error: function (xmlhttpRequest) {
+//                    //这里对错误进行处理
+//                    alert(resp);
+//
+//                },
+//                success: function (data) {
+//                    user_div.innerHTML = data;
+//
+//                }
+//            });
+
+        }
+
+    </script>
+    <style type="text/css">
+        #user-detail{
+            width: 0;
+        }
+        #users{
+            width: 100%;
+        }
+    </style>
+
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="sidebar" data-background-color="white" data-active-color="danger">
+
+        <!--
+            Tip 1: you can change the color of the sidebar's background using: data-background-color="white | black"
+            Tip 2: you can change the color of the active button using the data-active-color="primary | info | success | warning | danger"
+        -->
+
+        <div class="sidebar-wrapper">
+            <div class="logo">
+                <a href="#" class="simple-text">
+                    校园二手管理后台
+                </a>
+            </div>
+
+            <ul class="nav">
+                <li>
+                    <a href="index.html">
+                        <i class="ti-panel"></i>
+                        <p>主页</p>
+                    </a>
+                </li>
+                <li class="active">
+                    <a href="user.html">
+                        <i class="ti-user"></i>
+                        <p>用户管理</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="commodities.html">
+                        <i class="ti-view-list-alt"></i>
+                        <p>商品管理</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="orders.html">
+                        <i class="ti-view-list-alt"></i>
+                        <p>订单管理</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="setting.html">
+                        <i class="ti-text"></i>
+                        <p>管理员设置</p>
+                    </a>
+                </li>
+                <li>
+                    <a href="logout">
+                        <i class="ti-pencil-alt2"></i>
+                        <p>注销</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="main-panel">
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar bar1"></span>
+                        <span class="icon-bar bar2"></span>
+                        <span class="icon-bar bar3"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">用户管理</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="ti-panel"></i>
+                                <p>Stats</p>
+                            </a>
+                        </li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                                <i class="ti-bell"></i>
+                                <p class="notification">5</p>
+                                <p>Notifications</p>
+                                <b class="caret"></b>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#">Notification 1</a></li>
+                                <li><a href="#">Notification 2</a></li>
+                                <li><a href="#">Notification 3</a></li>
+                                <li><a href="#">Notification 4</a></li>
+                                <li><a href="#">Another notification</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#">
+                                <i class="ti-settings"></i>
+                                <p>Settings</p>
+                            </a>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+        </nav>
+
+        <div class="content">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12" style="float: left;">
+                        <div class="card" id="users">
+                            <div class="header">
+                                <h4 class="title">用户管理</h4>
+                                <form class="form-search form-inline">
+                                    <input class=" search-query input-group-lg" type="text" />
+                                    <button class="btn btn-success" contenteditable="true" type="submit">查找</button>
+                                </form>
+                            </div>
+
+                            <div class="content table-responsive table-full-width ">
+                                <table class="table table-striped " id="data-table">
+                                    <thead>
+                                    <tr class="success">
+                                        <th>编号</th>
+                                        <th>用户名</th>
+                                        <th>性别</th>
+                                        <th>手机号</th>
+                                        <th>邮箱号</th>
+                                        <th>身份</th>
+                                        <th>注册时间</th>
+                                        <th>编辑</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody id="data-body">
+                                    </tbody>
+                                </table>
+                                <div>
+                                    <ul class="pager">
+                                        <li><a href="#" id="pre-page" onclick="loadprepage(offset,limit)">上一页</a></li>
+                                        <li><a href="#" id="next-page" onclick="loadNextPage()">下一页</a></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+                    <div class="container-fluid">
+                        <nav class="pull-left">
+                            <ul>
+
+                                <li>
+                                    <a href="#">
+                                        Creative Tim
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="http://blog.creative-tim.com">
+                                        Blog
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="#/license">
+                                        Licenses
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                        <div class="copyright pull-right">
+                            &copy;
+                            <script>document.write(new Date().getFullYear())</script>
+                            , made with <i class="fa fa-heart heart"></i> by <a href="#">Creative Tim</a>. More
+                            Templates <a
+                                href="http://www.cssmoban.com/" target="_blank" title="模板之家">模板之家</a> - Collect from <a
+                                href="http://www.cssmoban.com/" title="网页模板" target="_blank">网页模板</a>
+                        </div>
+                    </div>
+                </footer>
+    </div>
+</div>
+
+
+</body>
+
+<!--   Core JS Files   -->
+<script src="assets/js/jquery-1.10.2.js" type="text/javascript"></script>
+<script src="assets/js/bootstrap.min.js" type="text/javascript"></script>
+
+<!--  Checkbox, Radio & Switch Plugins -->
+<script src="assets/js/bootstrap-checkbox-radio.js"></script>
+
+<!--  Charts Plugin -->
+<script src="assets/js/chartist.min.js"></script>
+
+<!--  Notifications Plugin    -->
+<script src="assets/js/bootstrap-notify.js"></script>
+
+<!--  Google Maps Plugin    -->
+<!--<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js"></script>-->
+
+<!-- Paper Dashboard Core javascript and methods for Demo purpose -->
+<script src="assets/js/paper-dashboard.js"></script>
+
+<!-- Paper Dashboard DEMO methods, don't include it in your project! -->
+<script src="assets/js/demo.js"></script>
+
+</html>

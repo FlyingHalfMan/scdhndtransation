@@ -8,8 +8,8 @@
         <properties>
             <!--JDBC-->
             <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
-            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/TourGuide?useSSL=false&amp;useUnicode=yes&amp;characterEncoding=UTF-8" />
-            <!--<property name="javax.persistence.jdbc.url" value="jdbc:mysql://139.129.48.197:3306/supermarket?useSSL=false&amp;useUnicode=yes&amp;characterEncoding=UTF-8" />-->
+            <!--<property name="javax.persistence.jdbc.url" value="jdbc:mysql://139.129.48.197:3306/CompusSecond?useSSL=false&amp;useUnicode=yes&amp;characterEncoding=UTF-8" />-->
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost:3306/CompusSecond?useSSL=false&amp;useUnicode=yes&amp;characterEncoding=UTF-8" />
             <property name="javax.persistence.jdbc.user" value="root" />
             <property name="javax.persistence.jdbc.password" value="941013" />
 

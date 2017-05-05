@@ -31,7 +31,7 @@ public class ImageService {
 
 
         // 判断上传的文件是不是一个图片(png,jpeg)
-        if (!ext.toUpperCase().equals(".PNG") && !ext.toUpperCase().equals(".JPG"))
+        if (!ext.toUpperCase().equals(".PNG") && !ext.toUpperCase().equals(".JPG") && !ext.toUpperCase().equals(".JPEG"))
             throw new InvalidException(403,"无效的文件,请选择png文件或者jpg文件");
 
         String endpoint;

@@ -7,10 +7,12 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="scdhndtransation" />
+        <module name="second" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="scdhndtransation" target="1.5" />
+      <module name="second" target="1.5" />
     </bytecodeTargetLevel>
   </component>
 </project>

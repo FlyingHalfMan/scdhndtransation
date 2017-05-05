@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
+    <title>校园二手管理后台</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'/>
+    <meta name="viewport" content="width=device-width"/>
+
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!-- Bootstrap core CSS     -->
+    <link href="admin/assets/css/bootstrap.min.css" rel="stylesheet"/>
+
+    <!-- Animation library for notifications   -->
+    <link href="admin/assets/css/animate.min.css" rel="stylesheet"/>
+
+    <!--  Paper Dashboard core CSS    -->
+    <!--<link href="admin/assets/css/paper-dashboard.css" rel="stylesheet"/>-->
+
+    <!--  Fonts and icons     -->
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css" rel="stylesheet">
+    <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
+
+    <style type="text/css">
+        .login-div {
+            background-color: white;
+            border-radius: 10px;
+            margin-top: 10%;
+        }
+
+
+        .regist-btn {
+            margin: 0 auto;
+            width: 80%;
+        }
+
+
+        .regist-div {
+            margin-top: 5%;
+        }
+
+        body {
+            background-color: whitesmoke;
+
+        }
+
+    </style>
+
+
+
+</head>
+<body>
+
+<!--注册页面需要的东西-->
+<!--1。 账号输入框，账号可以是邮箱或者手机-->
+<!--2。验证码输入框-->
+<!--3。密码设置输入框-->
+<!--4。再次输入密码。-->
+<!--错误提示显示你可以自己决定怎么显示-->
+<!--回来的数据在rsponse里面 ajax 的error responseText中，格式是 Error{"code":404,"msg":"发生错误了"}-->
+<div class="container"style="background-color: white">
+    <div class="row clearfix">
+        <div class="col-md-3 column">
+        </div>
+        <div class="col-md-6 column regist-div">
+
+            <form class="form-horizontal" >
+                <div class="page-header">
+                    <label class="control-label"><h2>欢迎使用校园二手管理平台</h2></label>
+                </div>
+                <div class="form-group regist-div">
+                    <label  class="col-sm-2 control-label">手机/邮箱</label>
+                    <div class="col-sm-10" id="count-div" >
+                        <input type="text" class="form-control" id="count" placeholder="请输入手机号/邮箱"/>
+                    </div>
+
+
+                </div>
+                <div class="form-group regist-div">
+                    <label class="col-sm-2 control-label">验证码</label>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="verifycode" placeholder="请输入验证码"/>
+                    </div>
+                    <button type="button" class="btn" id="verifycode-btn" onclick="getVerifycode()">获取验证码</button>
+                </div>
+                <div class="form-group regist-div">
+                    <label for="user-name" class="col-sm-2 control-label">用户名</label>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" id="user-name" placeholder="请输入用户名"/>
+                    </div>
+                </div>
+
+                <div class="form-group regist-div">
+                    <label for="password" class="col-sm-2 control-label">密码</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="password" placeholder="请输入密码"/>
+                    </div>
+                </div>
+                <div class="form-group regist-div">
+                    <label for="repeat" class="col-sm-2 control-label">再次输入</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="repeat" placeholder="请再次输入密码"/>
+                    </div>
+                </div>
+
+                <div class="form-group regist-div">
+                    <div class="col-sm-offset-2 col-sm-10">
+                        <button type="button" class="btn-lg btn-success regist-btn"id="regist-btn" onclick="regist()">开始注册</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+
+
+</script>
+<script type="text/javascript">
+
+    var duration = 60;
+    var timeClock;
+
+    function regist() {
+        $(document).ready(function () {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "http://localhost:8080/second/regist/verify",
+                data: {
+                    "count": $("#count").val(),
+                    "verifycode": $("#verifycode").val(),
+                    "userName":$("#user-name").val(),
+                    "password":$("#password").val(),
+                    "repeat":$("#repeat").val()
+                },
+                async: true,
+                dataType: "json",
+                error: function (xmlhttpRequest) {
+                    //这里对错误进行处理
+                    alert("error" + xmlhttpRequest.responseText);
+
+                },
+                success: function (data) {
+                    alert("登录成功");
+//                       $("body").html(data);
+                    window.location.href = data.msg;
+                }
+            });
+        });
+    }
+
+    function createAlert(msg) {
+
+        var alertDiv = document.createElement('div');
+        alertDiv.setAttribute('class','alert alert-warning');
+        var closelink = document.createElement('a');
+        closelink.setAttribute('href','#');
+        closelink.setAttribute('class','close');
+        closelink.setAttribute('data-dismiss','alert');
+        var closeNode = document.createTextNode('&times;');
+        closelink.appendChild(closeNode);
+
+        var message = document.createElement('strong');
+        var messagenode = document.createTextNode('警告');
+        message.appendChild(messagenode);
+        alertDiv.appendChild(closelink);
+        alertDiv.appendChild(message);
+        alertDiv.appendChild(document.createTextNode(msg));
+        return alertDiv;
+    }
+
+
+    function startTime()
+    {
+        if(duration == 0){
+            clearInterval(timeClock);
+            timeClock = null;
+            $('#verifycode-btn').text("再次获取");
+            $('#verifycode-btn').removeAttr("disabled");
+        }else {
+            $('#verifycode-btn').text(duration-- + 's后再次获取');
+            timeClock = setTimeout('startTime()', 1000);
+            $('#verifycode-btn').attr("disabled", 'true');
+        }
+    }
+
+    function getVerifycode() {
+        var count  = $("#count").val();
+        if(count == null || count.length < 1){
+            alert("请输入账号")
+        }
+        else {
+            $(document).ready(function () {
+                $.ajax({
+                    cache: true,
+                    type: "GET",
+                    url: "http://localhost:8080/second/regist/verifycode",
+                    data: {"count": $("#count").val()},
+                    async: true,
+                    contentType: "charset=UTF-8",
+                    dataType: "json",
+                    error: function (xmlhttpRequest) {
+                        //这里对错误进行处理
+                        var resp = $.parseJSON(xmlhttpRequest.responseText);
+                        alert("error" +resp.msg);
+                    },
+                    success: function (data) {
+                        alert(data.msg);
+                        startTime();
+                    },
+                });
+            });
+        }
+    }
+
+</script>
+
+</body>
+</html>

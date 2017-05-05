@@ -1,0 +1,32 @@
+# Created by .ignore support plugin (hsz.mobi)
+### Example user template template
+### Example user template
+
+# IntelliJ project files
+.idea
+*.iml
+out
+gen
+.idea/.name
+.idea/dataSources.local.xml
+.idea/dataSources/
+.idea/vcs.xml
+out/
+second.iml
+src/main/java/com/compus/second/Models/
+target/classes/com/compus/second/Bean/
+target/classes/com/compus/second/Constant.class
+target/classes/com/compus/second/Controller/CartController.class
+target/classes/com/compus/second/Controller/CommodityController.class
+target/classes/com/compus/second/Controller/OrderController.class
+target/classes/com/compus/second/Controller/OthersController.class
+target/classes/com/compus/second/Controller/RestPwdController.class
+target/classes/com/compus/second/Controller/UserController.class
+target/classes/com/compus/second/Controller/admin/
+target/classes/com/compus/second/Dao/
+target/classes/com/compus/second/Exception/
+target/classes/com/compus/second/Interceptor/
+target/classes/com/compus/second/Service/
+target/classes/com/compus/second/Table/
+target/classes/com/compus/second/Utils/
+target/maven-status/

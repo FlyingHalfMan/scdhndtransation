@@ -3,6 +3,7 @@ package com.compus.second.Controller;
 import com.aliyuncs.exceptions.ClientException;
 import com.compus.second.Bean.CommodityBean;
 import com.compus.second.Bean.SuccessBean;
+import com.compus.second.Constant;
 import com.compus.second.Dao.CommodityDao;
 import com.compus.second.Dao.CommodityImageDao;
 import com.compus.second.Dao.UserDao;
@@ -63,6 +64,7 @@ public class UserController extends  BaseController {
      * @throws UserException
      */
     @RequestMapping("")
+    @ResponseBody
     public SuccessBean getUserInormationView(HttpServletRequest  request,
                                                 HttpServletResponse response)throws UserException{
         HttpSession session = request.getSession();
@@ -134,8 +136,9 @@ public class UserController extends  BaseController {
      * @throws IOException
      */
     @RequestMapping(path = "update/image")
-    public SuccessBean updateImage(@RequestParam("iamge")CommonsMultipartFile image,
-                                    @RequestHeader("userid") final String userId) throws IOException {
+    @ResponseBody
+    public SuccessBean updateImage(@RequestParam("image")CommonsMultipartFile image,
+                                    @SessionAttribute("userId") final String userId) throws IOException {
         User user = userDao.findById(userId);
         String imageName = ImageService.uploadImageToImageServer(image,userId);
         user.setImage(imageName);
@@ -152,6 +155,7 @@ public class UserController extends  BaseController {
      * @throws ClientException
      */
     @RequestMapping("update/mobile/verify/{mobile}")
+    @ResponseBody
     public SuccessBean verifyMobile(@PathVariable("mobile") final String mobile,
                                      HttpServletRequest request,
                                      HttpServletResponse response) throws ClientException {
@@ -185,6 +189,7 @@ public class UserController extends  BaseController {
 
     // 修改手机
     @RequestMapping(value = "update/mobile",method = RequestMethod.POST)
+    @ResponseBody
     public SuccessBean updateMobile(@RequestParam("mobile") final String mobile,
                                      @RequestParam("verifycode") final String verifycode,
                                      HttpServletRequest request,
@@ -220,6 +225,7 @@ public class UserController extends  BaseController {
      */
     // 获取邮箱验证码
     @RequestMapping("update/email/verify/{email}")
+    @ResponseBody
     public SuccessBean verifyEmail(@PathVariable("email") final String email,
                                     HttpServletRequest request,
                                     HttpServletResponse response){
@@ -250,7 +256,8 @@ public class UserController extends  BaseController {
      * @return
      * @throws ParseException
      */
-    @RequestMapping(value = "update/email",method = RequestMethod.POST)
+    @RequestMapping(value = "update/email",method = RequestMethod.GET)
+    @ResponseBody
     public SuccessBean updateEmail(@RequestParam("email")      final String email,
                                    @RequestParam("verifycode") final String verifycode,
                                     HttpServletRequest request,
@@ -292,14 +299,17 @@ public class UserController extends  BaseController {
      * @param response
      * @return
      */
-    public SuccessBean commodities(@RequestParam("status") final int status,
+
+    @RequestMapping("sold")
+    @ResponseBody
+    public SuccessBean commodities(@RequestParam("order") final int status,
                                    @RequestParam("offset") final int offset,
                                    @RequestParam("limit") final int limit,
                                    HttpServletRequest request,
                                    HttpServletResponse response){
 
         HttpSession session = request.getSession();
-        String userId = (String) session.getAttribute("userid");
+        String userId = (String) session.getAttribute("userId");
         User user = userDao.findById(userId);
 
         List<Commodity> commodityList  = commodityDao.listCommodityByUserId(userId,status,offset,limit);

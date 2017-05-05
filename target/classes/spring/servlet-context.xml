@@ -4,11 +4,15 @@
        xmlns:task="http://www.springframework.org/schema/task"
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
-		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task.xsd
+       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/task
+		http://www.springframework.org/schema/task/spring-task.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
     <context:component-scan base-package="com.compus.second.*" />
@@ -26,8 +30,28 @@
         </tx:attributes>
     </tx:advice>
 
-    <mvc:resources mapping="/**/*.jsp" location="WEB-INF"/>
-    <mvc:resources mapping="/Resources/**" location="/WEB-INF/Resources/"/>
+    <mvc:resources mapping="/nav.html" location="/WEB-INF/views/nav.html"/>
+    <mvc:resources mapping="/search.html" location="/WEB-INF/views/search.html"/>
+    <mvc:resources mapping="/tail.html" location="/WEB-INF/views/tail.html"/>
+    <mvc:resources mapping="/admin/assets/**/**.js" location="/WEB-INF/views/admin/assets/js"/>
+    <mvc:resources mapping="/admin/assets/css/**.css" location="WEB-INF/views/admin/assets/css/"/>
+    <mvc:resources mapping="/admin/assets/**/**" location="WEB-INF/views/admin/assets/"/>
+    <mvc:resources mapping="/admin/**.html" location="WEB-INF/views/admin/"/>
+
+
+    <mvc:resources mapping="/shop/css/**.css" location="WEB-INF/views/shop/css/"/>
+    <mvc:resources mapping="/shop/js/**.js" location="WEB-INF/views/shop/js/"/>
+    <mvc:resources mapping="/shop/img/**.jpg" location="WEB-INF/views/shop/img/"/>
+    <mvc:resources mapping="/shop/img/**.png" location="WEB-INF/views/shop/img/"/>
+    <mvc:resources mapping="/shop/**.html" location="WEB-INF/views/shop/"/>
+    <mvc:resources mapping="/shop/**.css" location="WEB-INF/views/shop/"/>
+
+    <mvc:resources mapping="/user/**.html" location="WEB-INF/views/user/"/>
+    <!--<mvc:resources mapping="/**/*.jsp" location="WEB-INF"/>-->
+    <!--<mvc:resources mapping="/Resources/bootstrap-3.3.0/**/**" location="/WEB-INF/Resources/bootstrap-3.3.0/"/>-->
+
+    <mvc:resources mapping="/user/**.html" location="WEB-INF/views/user/"/>
+
 
     <!-- EntityManagerFactory-->
     <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"/>
@@ -58,14 +82,38 @@
         <property name="prefix" value="/WEB-INF/views/"/>
         <property name="suffix" value=".html"/>
     </bean>
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/views/"/>
+        <property name="suffix" value=".html"/>
+    </bean>
+
+    <!-- 多部分文件上传 -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+        <property name="maxUploadSize" value="104857600" />
+        <property name="maxInMemorySize" value="4096" />
+        <property name="defaultEncoding" value="UTF-8"></property>
+    </bean>
+
+    <!--<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter"-->
+          <!--p:ignoreDefaultModelOnRedirect="true" >-->
+        <!--<property name="messageConverters">-->
+            <!--<list>-->
+                <!--<bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter"/>-->
+            <!--</list>-->
+        <!--</property>-->
+    <!--</bean>-->
 
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/*"/>
             <mvc:exclude-mapping path="/login"/>
             <mvc:exclude-mapping path="/regist"/>
-            <bean class="com.compus.second.AutenticateInterceptor" />
-
+            <bean class="com.compus.second.Interceptor.AutenticateInterceptor" />
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/*"/>
+            <bean class="com.compus.second.Interceptor.EncodingInterceptor"></bean>
         </mvc:interceptor>
     </mvc:interceptors>
 
