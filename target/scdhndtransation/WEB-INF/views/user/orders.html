@@ -29,6 +29,35 @@
     <link href='https://fonts.googleapis.com/css?family=Muli:400,300' rel='stylesheet' type='text/css'>
     <link href="../admin/assets/css/themify-icons.css" rel="stylesheet">
 
+    <script type="text/javascript">
+        var offset = 0;
+        var limit = 10;
+        $(document).ready(function () {
+            loadOrders(offset,limit);
+        });
+
+        function loadOrders(off,lim) {
+            $.ajax({
+                type: "GET",
+                async: true,
+                url: "http://localhost:8080/second/orders/user",
+                data: {
+                    offset:off,
+                    limit:lim
+                },
+                dataType: 'json',
+                error: function (xmlhttpRequest) {
+                    //这里对错误进行处理
+                    alert("error" + xmlhttpRequest.responseText);
+                },
+                success: function (data) {
+                    setUserInfor(data.model);
+
+                }
+            });
+        }
+    </script>
+
 </head>
 <body>
 
@@ -159,8 +188,8 @@
                                 </table>
                                 <div>
                                     <ul class="pager">
-                                        <li><a href="#" id="pre-page" onclick="loadprepage(offset,limit)">上一页</a></li>
-                                        <li><a href="#" id="next-page" onclick="loadNextPage()">下一页</a></li>
+                                        <li><a href="#" id="pre-page" onclick="loadOrders(offset-10,limit-10)">上一页</a></li>
+                                        <li><a href="#" id="next-page" onclick="loadNextPage(offset+10,limit+10)">下一页</a></li>
                                     </ul>
                                 </div>
                             </div>

@@ -40,7 +40,7 @@
             $.ajax({
                 cache: true,
                 type: "GET",
-                url: "http://localhost:8080/second/user/sold",
+                url: "http://139.129.48.197:8080/second/user/sold",
                 data: {
                     "order":order,
                     "offset":off,
@@ -83,7 +83,7 @@
                 var detail_link = document.createElement("a");
                 var name_text = document.createTextNode(model.title);
                 detail_link.appendChild(name_text);
-                // a_node.setAttribute('href','http://localhost:8080/second/admin/user/delete?user='+model.userId);
+                // a_node.setAttribute('href','http://139.129.48.197:8080/second/admin/user/delete?user='+model.userId);
                 detail_link.setAttribute("onclick", 'viewDetail(' + (i + 1) + ')');
                 cell1.appendChild(detail_link);
 
@@ -106,7 +106,7 @@
                 var cell6 = row.insertCell(6);
                 var userLink = document.createElement('a');
                 var userNode = document.createTextNode(model.userName);
-                userLink.setAttribute("href","http://localhost:8080/second/user/profile.html?userId="+model.userId);
+                userLink.setAttribute("href","http://139.129.48.197:8080/second/user/profile.html?userId="+model.userId);
                 userLink.setAttribute("target","_blanket");
                 userLink.appendChild(userNode);
                 cell6.appendChild(userLink);
@@ -121,7 +121,7 @@
                 var a_node = document.createElement("a");
                 var a_text = document.createTextNode("删除商品");
                 a_node.appendChild(a_text);
-                // a_node.setAttribute('href','http://localhost:8080/second/admin/user/delete?user='+model.userId);
+                // a_node.setAttribute('href','http://139.129.48.197:8080/second/admin/user/delete?user='+model.userId);
                 a_node.setAttribute("onclick", 'deleteCommodity(' + (i + 1) + ')');
                 cell8.appendChild(a_node);
                 cell8.appendChild(document.createElement("br"));
@@ -191,7 +191,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="http://localhost:8080/second/shop/index.html">
+                    <a href="http://139.129.48.197:8080/second/shop/index.html">
                         <i class="ti-text"></i>
                         <p>商城主页</p>
                     </a>
@@ -221,13 +221,13 @@
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a href="http://localhost:8080/second/shop/index.html" >
+                            <a href="http://139.129.48.197:8080/second/shop/index.html" >
                                 <i class="ti-panel"></i>
                                 <p>商城首页</p>
                             </a>
                         </li>
                         <li >
-                            <a href="http://localhost:8080/second/admin/index.htmls" >
+                            <a href="http://139.129.48.197:8080/second/admin/index.htmls" >
                                 <i class="ti-bell"></i>
                                 <p>管理员平台</p>
                                 <b class="caret"></b>

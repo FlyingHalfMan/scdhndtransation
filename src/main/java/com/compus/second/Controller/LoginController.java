@@ -76,13 +76,7 @@ public class LoginController extends BaseController {
                         USER_EXCEPTOIN_TYPE.USER_EXCEPTOIN_TYPE_WRONGPWD.getMsg());
             }
             else {
-                String url ;
-                if (user.getAuth() >=1){
-                   url = "http://localhost:8080/second/admin/index.html";
-                }
-                else {
-                    url = "http://localhost:8080/second/shop/index.html";
-                }
+                String url = "http://localhost:8080/second/shop/index.html";
                 HttpSession session = request.getSession();
                 session.setAttribute("userId",user.getUserId());        // 用户的id
                 session.setAttribute("token",user.getToken());          // 用户的安全验证

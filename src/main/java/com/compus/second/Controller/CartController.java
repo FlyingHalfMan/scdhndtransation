@@ -29,8 +29,7 @@ import java.util.Map;
  */
 
 @Controller
-@RequestMapping(path = "cart")
-public class CartController {
+public class CartController extends BaseController {
 
     @Autowired
     private  CartDao cartDao;
@@ -50,7 +49,14 @@ public class CartController {
      * @param response
      * @return
      */
-    @RequestMapping(path = "",method = RequestMethod.GET)
+
+    @RequestMapping(path = "cart",method = RequestMethod.GET)
+    public String  cart(){
+        return "cart";
+    }
+
+    @RequestMapping(path = "cart/list",method = RequestMethod.GET)
+    @ResponseBody
     public SuccessBean listCart(@RequestParam("offset") final int offset,
                                 @RequestParam("limit") final int limit,
                                 HttpServletRequest request, HttpServletResponse response){
@@ -78,12 +84,15 @@ public class CartController {
      * @param response
      * @return
      */
-    public ModelAndView  addCart(@RequestParam("commodityid") final  String commodityId,
+
+    @RequestMapping("add")
+    @ResponseBody
+    public SuccessBean  addCart(@RequestParam("commodityid") final  String commodityId,
                                  HttpServletRequest request,
                                  HttpServletResponse response){
         // 检查该商品是否已经被购买，下订单，商品数量是否充足。加入购物车不算被购买，只有用户下订单才算购买
 
-        String userId = (String) request.getSession().getAttribute("userid");
+        String userId = (String) request.getSession().getAttribute("userId");
 
         // 检查商品的状态，如果商品的状态为不可购买或者下架状态就不允许添加购物车
         Commodity commodity = commodityDao.findByCommodityId(commodityId);
@@ -104,7 +113,7 @@ public class CartController {
         cart.setUserId(userId);
         cart.setCommodityId(commodityId);
         cartDao.addCart(cart);
-        return new ModelAndView("",null);
+        return new SuccessBean(200,"添加购物车成功","http://localhost:8080/second/addSuccess.html?commodityId="+commodityId,null);
     }
 
     /**

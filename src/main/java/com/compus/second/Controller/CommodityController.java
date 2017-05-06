@@ -53,6 +53,9 @@ public class CommodityController extends BaseController{
      * @param response
      * @return
      */
+
+
+
     @RequestMapping(value = "sell",method = RequestMethod.GET)
     public ModelAndView goToCommodityAddPage(HttpServletRequest request,
                                              HttpServletResponse response) {

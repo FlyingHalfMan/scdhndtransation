@@ -64,7 +64,7 @@ public class AdminController extends BaseController {
      */
 
 
-    @RequestMapping(path = "users")
+    @RequestMapping(path = "user")
     public ModelAndView users()
     {
         return new ModelAndView("admin/user",null);

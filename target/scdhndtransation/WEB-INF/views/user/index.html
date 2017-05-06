@@ -1,19 +1,19 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="utf-8" />
-	<link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
-	<link rel="icon" type="image/png" sizes="96x96" href="assets/img/favicon.png">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8"/>
+    <link rel="apple-touch-icon" sizes="76x76" href="assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="assets/img/favicon.png">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
 
-	<title>校园二手管理后台</title>
+    <title>校园二手管理后台</title>
 
-	<meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
-    <meta name="viewport" content="width=device-width" />
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport'/>
+    <meta name="viewport" content="width=device-width"/>
 
     <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
     <!-- Bootstrap core CSS     -->
-    <link href="../admin/assets/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="../admin/assets/css/bootstrap.min.css" rel="stylesheet"/>
 
     <!-- Animation library for notifications   -->
     <link href="../admin/assets/css/animate.min.css" rel="stylesheet"/>
@@ -32,14 +32,14 @@
             $.ajax({
                 cache: true,
                 type: "GET",
-                url: "http://localhost:8080/second/user",
+                url: "http://localhost:8080/second/user/profile",
                 data: null,
                 async: true,
                 dataType: "json",
-                error:function (xmlhttpRequest) {
+                error: function (xmlhttpRequest) {
                     alert(xmlhttpRequest.responseText);
                 },
-                success:function (data) {
+                success: function (data) {
                     var user = data.model;
                     setUserInfor(user);
                 }
@@ -48,7 +48,7 @@
 
         function setUserInfor(user) {
             $('#headImage').attr("src", user.image == null ? "../admin/assets/img/faces/face-2.jpg"
-                :"http://fudatour.oss-cn-shanghai.aliyuncs.com/secondhand/" +user.image);
+                : "http://fudatour.oss-cn-shanghai.aliyuncs.com/secondhand/" + user.image);
 
             $("#userId").val(user.userId);
             $('#userName').val(user.name);
@@ -56,11 +56,11 @@
             $('#nameLabel').html(user.name);
             $('#registDate').html(user.registDate);
             $('#gender').val(user.gender);
-            $('#mobile').val(user.mobile == null ? '未设置':user.mobile);
-            $('#email').val(user.email ==null ? '未设置':user.email);
+            $('#mobile').val(user.mobile == null ? '未设置' : user.mobile);
+            $('#email').val(user.email == null ? '未设置' : user.email);
             $('#address').val("福建省福州市闽江学院");
             $('#location').val(user.origion);
-            $('#birthdate').val(user.birthdate);
+            $('#birthdate').val(user.birthday);
         }
 
         function choseImage() {
@@ -70,50 +70,83 @@
             $(document).ready(function () {
                 var name = $("#choseImage").val();
                 var formData = new FormData();
-                formData.append("image",$("#choseImage")[0].files[0]);
-                formData.append("name",name);
+                formData.append("image", $("#choseImage")[0].files[0]);
+                formData.append("name", name);
                 $.ajax({
-                    url : "http://localhost:8080/second/user/update/image",
-                    type : 'POST',
-                    data :formData,
+                    url: "http://localhost:8080/second/user/update/image",
+                    type: 'POST',
+                    data: formData,
                     // 告诉jQuery不要去处理发送的数据
-                    processData : false,
+                    processData: false,
                     // 告诉jQuery不要去设置Content-Type请求头
-                    contentType : false,
-                    beforeSend:function(){
+                    contentType: false,
+                    beforeSend: function () {
                         console.log("正在进行，请稍候");
                     },
-                    success : function(data) {
-                        alert(data.msg);
-                        setUserInfor(data.model);
-                       // $("#headImage").src = "http://fudatour.oss-cn-shanghai.aliyuncs.com/secondhand/"+data.model +"?x-oss-process=image/resize,m_mfit,w_120,h_120,limit_0/auto-orient,0/quality,q_90";
+                    success: function (data) {
+                        (data.model);
+                        // $("#headImage").src = "http://fudatour.oss-cn-shanghai.aliyuncs.com/secondhand/"+data.model +"?x-oss-process=image/resize,m_mfit,w_120,h_120,limit_0/auto-orient,0/quality,q_90";
                     },
-                    error : function(responseStr) {
+                    error: function (responseStr) {
                         console.log("error");
                     }
                 });
             });
         }
 
-        function verifyName(){
+        function verifyName() {
             $.ajax({
-                url : "http://localhost:8080/second/user/verify/name/",
-                type : 'GET',
-                data :{
-                    "name":$('#userName').val()
+                url: "http://localhost:8080/second/user/verify/name/",
+                type: 'GET',
+                data: {
+                    "name": $('#userName').val()
                 },
-                async:true,
-                cache:true,
-                contentType : 'json',
-                success : function(data) {
+                async: true,
+                cache: true,
+                contentType: 'json',
+                success: function (data) {
                     alert(data.msg);
                 },
-                error : function(xmlhttpRequest) {
+                error: function (xmlhttpRequest) {
                     console.log("error");
                     $("#warming").html(xmlhttpRequest.responseText.msg);
-                    $("#warming").setAttribute("style","");
+                    $("#warming").setAttribute("style", "");
                 }
             });
+        }
+
+        function updateProfile() {
+
+            var userName = $('#userName').val();
+            var birthdate = $('#birthdate').val();
+            var gender = $('#gender').val();
+            var address = $('#address').val();
+            var location = $('#location').val();
+
+            $(document).ready(function () {
+                $.ajax({
+                    type: "POST",
+                    async: true,
+                    url: "http://localhost:8080/second/user/update",
+                    data: {
+                        'userName': userName,
+                        'gender': gender,
+                        'birthdate': birthdate,
+                        'origion': location,
+                        'address': address
+                    },
+                    dataType: 'json',
+                    error: function (xmlhttpRequest) {
+                        //这里对错误进行处理
+                        alert("error" + xmlhttpRequest.responseText);
+                    },
+                    success: function (data) {
+                        setUserInfor(data.model);
+
+                    }
+                });
+            });
+
         }
     </script>
 
@@ -123,7 +156,7 @@
 <div class="wrapper">
     <div class="sidebar" data-background-color="white" data-active-color="danger">
 
-    	<div class="sidebar-wrapper">
+        <div class="sidebar-wrapper">
             <div class="logo">
                 <a href="http://localhost:8080/second/admin/index.html" class="simple-text">
                     个人中心
@@ -156,9 +189,9 @@
                     </a>
                 </li>
                 <li>
-                    <a href="http://localhost:8080/second/shop/index.html">
+                    <a href="http://localhost:8080/second/user/cart.html">
                         <i class="ti-text"></i>
-                        <p>商城主页</p>
+                        <p>我的购物车</p>
                     </a>
                 </li>
                 <li>
@@ -168,7 +201,7 @@
                     </a>
                 </li>
             </ul>
-    	</div>
+        </div>
     </div>
     <div class="main-panel">
         <nav class="navbar navbar-default">
@@ -185,13 +218,13 @@
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a href="http://localhost:8080/second/shop/index.html" >
+                            <a href="http://localhost:8080/second/shop/index.html">
                                 <i class="ti-panel"></i>
                                 <p>商城首页</p>
                             </a>
                         </li>
-                        <li >
-                            <a href="http://localhost:8080/second/admin/index.htmls" >
+                        <li>
+                            <a href="http://localhost:8080/second/admin/index.htmls">
                                 <i class="ti-bell"></i>
                                 <p>管理员平台</p>
                                 <b class="caret"></b>
@@ -215,18 +248,22 @@
                 <div class="col-md-12 column">
                     <div class="card card-user">
                         <div class="image">
-                            <img src="../admin/assets/img/background.jpg" alt="..." />
+                            <img src="../admin/assets/img/background.jpg" alt="..."/>
 
                         </div>
                         <div class="content">
                             <div class="author">
-                                <img class="avatar border-white" id="headImage" src="../admin/assets/img/faces/face-2.jpg" alt="..." onclick="choseImage()"/>
-                                <input id="choseImage" type="file" accept="image/png,image/jpeg" style="display:none" onchange="uploadImage()" />
-                                <h4 class="title" id="nameLabel">Chet Faker<br />
-                                    <a href="#"><small >@chetfaker</small></a>
+                                <img class="avatar border-white" id="headImage"
+                                     src="../admin/assets/img/faces/face-2.jpg" alt="..." onclick="choseImage()"/>
+                                <input id="choseImage" type="file" accept="image/png,image/jpeg" style="display:none"
+                                       onchange="uploadImage()"/>
+                                <h4 class="title" id="nameLabel">Chet Faker<br/>
+                                    <a href="#">
+                                        <small>@chetfaker</small>
+                                    </a>
                                 </h4>
                             </div>
-                            <p class="description text-center" id ="registDate">
+                            <p class="description text-center" id="registDate">
                                 "I like the way you work it <br>
                                 No diggity <br>
                                 I wanna bag it up"
@@ -246,7 +283,8 @@
                                         <div class="col-md-5">
                                             <div class="form-group">
                                                 <label class="control-label">用户id</label>
-                                                <input id="userId" type="text" class="form-control border-input" disabled placeholder="Company" value="XXXXX">
+                                                <input id="userId" type="text" class="form-control border-input"
+                                                       disabled placeholder="Company" value="XXXXX">
                                             </div>
                                         </div>
                                     </div>
@@ -257,8 +295,9 @@
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <label>用户名</label>
-                                                <input id="userName" type="text" class="form-control border-input" placeholder="Username" value="" oninput="verifyName()">
-                                                <label id = "warming" style="display: none;"></label>
+                                                <input id="userName" type="text" class="form-control border-input"
+                                                       placeholder="Username" value="" oninput="verifyName()">
+                                                <label id="warming" style="display: none;"></label>
                                             </div>
                                         </div>
                                     </div>
@@ -268,8 +307,9 @@
                                         </div>
                                         <div class="col-md-4">
                                             <div class="form-group">
-                                                <label >性别</label>
-                                                <input id="gender" type="email" class="form-control border-input" placeholder="Email">
+                                                <label>性别</label>
+                                                <input id="gender" type="email" class="form-control border-input"
+                                                       placeholder="Email">
                                             </div>
                                         </div>
                                     </div>
@@ -281,7 +321,8 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>手机号码</label>
-                                                <input  id="mobile" type="text" class="form-control border-input" placeholder="Company" value="13110518698" disabled>
+                                                <input id="mobile" type="text" class="form-control border-input"
+                                                       placeholder="Company" value="13110518698" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -292,7 +333,8 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>邮箱</label>
-                                                <input id="email" type="text" class="form-control border-input" placeholder="Last Name" value="hf941@qq.com" disabled>
+                                                <input id="email" type="text" class="form-control border-input"
+                                                       placeholder="Last Name" value="hf941@qq.com" disabled>
                                             </div>
                                         </div>
                                     </div>
@@ -304,7 +346,8 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <label>地址</label>
-                                                <input id="address" type="text" class="form-control border-input" placeholder="Home Address" value="Melbourne, Australia">
+                                                <input id="address" type="text" class="form-control border-input"
+                                                       placeholder="Home Address" value="Melbourne, Australia">
                                             </div>
                                         </div>
                                     </div>
@@ -316,7 +359,8 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>地区</label>
-                                                <input id="location" type="text" class="form-control border-input" placeholder="City" value="Melbourne">
+                                                <input id="location" type="text" class="form-control border-input"
+                                                       placeholder="City" value="Melbourne">
                                             </div>
                                         </div>
                                     </div>
@@ -327,7 +371,8 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <label>出生日期</label>
-                                                <input id="birthdate" type="date" class="form-control border-input" placeholder="Country" value="Australia">
+                                                <input id="birthdate" type="date" class="form-control border-input"
+                                                       placeholder="Country" value="Australia">
                                             </div>
                                         </div>
                                     </div>
@@ -338,7 +383,9 @@
                                         </div>
                                         <div class="col-md-2">
                                             <div class="form-group">
-                                                <button type="button" class="btn btn-success">确认修改</button>
+                                                <button type="button" class="btn btn-success" onclick="updateProfile()">
+                                                    确认修改
+                                                </button>
                                             </div>
                                         </div>
                                         <div class="col-md-1">
@@ -368,7 +415,7 @@
                         </li>
                         <li>
                             <a href="http://blog.creative-tim.com">
-                               Blog
+                                Blog
                             </a>
                         </li>
                         <li>
@@ -379,7 +426,9 @@
                     </ul>
                 </nav>
                 <div class="copyright pull-right">
-                    &copy; <script>document.write(new Date().getFullYear())</script>, made with <i class="fa fa-heart heart"></i> by <a href="#">Creative 校园二手平台</a>
+                    &copy;
+                    <script>document.write(new Date().getFullYear())</script>
+                    , made with <i class="fa fa-heart heart"></i> by <a href="#">Creative 校园二手平台</a>
                 </div>
             </div>
         </footer>
@@ -390,53 +439,53 @@
 
 </body>
 
-    <!--   Core JS Files   -->
-    <script src="../admin/assets/js/jquery-1.10.2.js" type="text/javascript"></script>
-	<script src="../admin/assets/js/bootstrap.min.js" type="text/javascript"></script>
+<!--   Core JS Files   -->
+<script src="../admin/assets/js/jquery-1.10.2.js" type="text/javascript"></script>
+<script src="../admin/assets/js/bootstrap.min.js" type="text/javascript"></script>
 
-	<!--  Checkbox, Radio & Switch Plugins -->
-	<script src="../admin/assets/js/bootstrap-checkbox-radio.js"></script>
+<!--  Checkbox, Radio & Switch Plugins -->
+<script src="../admin/assets/js/bootstrap-checkbox-radio.js"></script>
 
-	<!--  Charts Plugin -->
-	<script src="../admin/assets/js/chartist.min.js"></script>
+<!--  Charts Plugin -->
+<script src="../admin/assets/js/chartist.min.js"></script>
 
-    <!--  Notifications Plugin    -->
-    <script src="../admin/assets/js/bootstrap-notify.js"></script>
+<!--  Notifications Plugin    -->
+<script src="../admin/assets/js/bootstrap-notify.js"></script>
 
-    <!-- Paper Dashboard Core javascript and methods for Demo purpose -->
-	<script src="../admin/assets/js/paper-dashboard.js"></script>
+<!-- Paper Dashboard Core javascript and methods for Demo purpose -->
+<script src="../admin/assets/js/paper-dashboard.js"></script>
 
-	<!-- Paper Dashboard DEMO methods, don't include it in your project! -->
-	<script src="../admin/assets/js/demo.js"></script>
+<!-- Paper Dashboard DEMO methods, don't include it in your project! -->
+<script src="../admin/assets/js/demo.js"></script>
 
-	<script type="text/javascript">
-    	$(document).ready(function(){
+<script type="text/javascript">
+    $(document).ready(function () {
 
-        	demo.initChartist();
+        demo.initChartist();
 
-        	$.notify({
-            	icon: 'ti-gift',
-            	message: "Welcome to <b>Paper Dashboard</b> - a beautiful Bootstrap freebie for your next project."
+        $.notify({
+            icon: 'ti-gift',
+            message: "Welcome to <b>Paper Dashboard</b> - a beautiful Bootstrap freebie for your next project."
 
-            },{
-                type: 'success',
-                timer: 4000
-            });
+        }, {
+            type: 'success',
+            timer: 4000
+        });
 
-    	});
-	</script>
+    });
+</script>
 
-    <script type="text/javascript">
-        $(document).ready(function () {
+<script type="text/javascript">
+    $(document).ready(function () {
 
-            function loadUsers() {
+        function loadUsers() {
 
-                $.get("users.html",null,function (data) {
-                    $('.main-panel').innerHTML  = data;
-                })
-            }
+            $.get("users.html", null, function (data) {
+                $('.main-panel').innerHTML = data;
+            })
+        }
 
-        })
-    </script>
+    })
+</script>
 
 </html>

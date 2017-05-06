@@ -1,6 +1,8 @@
 package com.compus.second.Interceptor;
 
+import com.compus.second.Dao.UserDao;
 import com.compus.second.Utils.EncryptUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -11,9 +13,11 @@ import javax.servlet.http.*;
  */
 public class AutenticateInterceptor implements HandlerInterceptor {
 
-
+    @Autowired
+    private UserDao userDao;
 
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
+
 
         /**
          * AuthenticateInterceptor  拦截器
@@ -21,32 +25,18 @@ public class AutenticateInterceptor implements HandlerInterceptor {
          */
         Cookie[]  cookies = httpServletRequest.getCookies();
 
-        /**
-         * cookie 不存在，跳转到登录页面
-         */
-
         HttpSession session = httpServletRequest.getSession();
-        String token = "";
-        // 获取token,如果token 不存在就说明还没有登录，跳转到登录页面
-        // token 格式 userId +角色Id +securityToken
-        token = (String) session.getAttribute("token");
-        String url = httpServletRequest.getRequestURI();
-        if(token ==null || token.length() <1) {
-            httpServletResponse.sendRedirect(httpServletRequest.getContextPath() +"/login");
-//            Cookie[] cookies = httpServletRequest.getCookies();
-            // 这个地方因该在cookie 中放置一个RSA公钥，用户客户端登录加密。上来后登录的时候再解密，使用salt进行解密验证身份，然后将token 放置到session中
-//            for(Cookie cookie :cookies)
-//            {
-//                //
-//                // 在cookie 中放置一个salt 用来进行用户加密
-//                cookie.setValue(EncryptUtil.salt());
-//            }
+        String userId = (String) session.getAttribute("userId");
 
+        String token = (String) session.getAttribute("token");
+
+        if (userId == null || userId.length() < 1 || token == null || token.length() < 1){
+//            httpServletRequest.getRequestDispatcher("/login").forward(httpServletRequest,httpServletResponse);
+            httpServletResponse.sendRedirect(httpServletRequest.getContextPath() +"/login");
             return false;
         }
-        String userId = token.substring(0,15);
-        String role = token.substring(16,17);
-        String securityToken = token.substring(17,token.length());
+
+        String url = httpServletRequest.getRequestURI();
         // 获取请求的url,验证权限
 
 //        if(role)

@@ -44,7 +44,7 @@
                 cache: true,
                 type: "GET",
                 async: true,
-                url: "http://localhost:8080/second/commodity/commodities?order=0&offset=0&limit=4",
+                url: "http://139.129.48.197:8080/second/commodity/commodities?order=0&offset=0&limit=4",
                 data: null,
                 dataType: 'json',
                 error: function (xmlhttpRequest) {
@@ -55,7 +55,7 @@
                     models = data.models;
                     for (var i = 0; i < models.length; i++) {
                         var model = models[i];
-                        var link = "http://localhost:8080/second/shop/single-product.html?id=" + model.commodityId;
+                        var link = "http://139.129.48.197:8080/second/shop/single-product.html?id=" + model.commodityId;
                         var c_title = model.title;
                         // var image = "http://fudatour.oss-cn-shanghai.aliyuncs.com/secondhand/"+ model.image;
                         var image = "img/product-1.jpg";
@@ -68,7 +68,7 @@
         });
 
         function sell() {
-            window.location.href = "http://localhost:8080/second/shop/sell.html";
+            window.location.href = "http://139.129.48.197:8080/second/shop/sell.html";
         }
     </script>
 </head>
@@ -80,7 +80,7 @@
             <div class="col-md-8">
                 <div class="user-menu">
                     <ul>
-                        <li><a href="http://localhost:8080/second/user/index.html"><i class="fa fa-user"></i> 个人中心</a></li>
+                        <li><a href="http://139.129.48.197:8080/second/user/index.html"><i class="fa fa-user"></i> 个人中心</a></li>
                         <li><a href="cart.html"><i class="fa fa-user"></i> 我的购物车</a></li>
                         <li><a href=""><i class="fa fa-user"></i>退出系统</a></li>
                     </ul>

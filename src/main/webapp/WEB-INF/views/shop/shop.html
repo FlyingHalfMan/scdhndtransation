@@ -55,7 +55,7 @@
                 cache: true,
                 type: "GET",
                 async: true,
-                url: "http://localhost:8080/second/commodity/commodities/" + type +"?offset="+offset +"&limit="+limit +"&order=0",
+                url: "http://139.129.48.197:8080/second/commodity/commodities/" + type +"?offset="+offset +"&limit="+limit +"&order=0",
                 data: null,
                 dataType: 'json',
                 error: function (xmlhttpRequest) {
@@ -66,7 +66,7 @@
                     models = data.models;
                     for (var i = 0; i < models.length; i++) {
                         var model = models[i];
-                        var link = "http://localhost:8080/second/commodity/" + model.commodityId;
+                        var link = "http://139.129.48.197:8080/second/commodity/" + model.commodityId;
                         var c_title = model.title;
                         // var image = "http://fudatour.oss-cn-shanghai.aliyuncs.com/secondhand/"+ model.image;
                         var image = "img/product-1.jpg";

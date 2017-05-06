@@ -45,7 +45,7 @@
 
         <div class="sidebar-wrapper">
             <div class="logo">
-                <a href="http://localhost:8080/second/admin/index.html" class="simple-text">
+                <a href="http://139.129.48.197:8080/second/admin/index.html" class="simple-text">
                     个人中心
                 </a>
             </div>
@@ -76,7 +76,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="http://localhost:8080/second/shop/index.html">
+                    <a href="http://139.129.48.197:8080/second/shop/index.html">
                         <i class="ti-text"></i>
                         <p>商城主页</p>
                     </a>
@@ -105,13 +105,13 @@
                 <div class="collapse navbar-collapse">
                     <ul class="nav navbar-nav navbar-right">
                         <li>
-                            <a href="http://localhost:8080/second/shop/index.html" >
+                            <a href="http://139.129.48.197:8080/second/shop/index.html" >
                                 <i class="ti-panel"></i>
                                 <p>商城首页</p>
                             </a>
                         </li>
                         <li >
-                            <a href="http://localhost:8080/second/admin/index.htmls" >
+                            <a href="http://139.129.48.197:8080/second/admin/index.htmls" >
                                 <i class="ti-bell"></i>
                                 <p>管理员平台</p>
                                 <b class="caret"></b>
@@ -265,7 +265,7 @@
             formData.append("image",$("#image")[0].files[0]);
             formData.append("name",name);
             $.ajax({
-                url : "http://localhost:8080/second/commodity/addphoto",
+                url : "http://139.129.48.197:8080/second/commodity/addphoto",
                 type : 'POST',
                 data :formData,
                 // 告诉jQuery不要去处理发送的数据
@@ -312,7 +312,7 @@
                 $.ajax({
                     cache: true,
                     type: "POST",
-                    url: "http://localhost:8080/second/commodity/add",
+                    url: "http://139.129.48.197:8080/second/commodity/add",
                     data: {
                         "title": $("#title").val(),
                         "describe": $("#introduce").val(),

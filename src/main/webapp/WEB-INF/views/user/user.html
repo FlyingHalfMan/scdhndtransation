@@ -40,7 +40,7 @@
             $.ajax({
                 cache: true,
                 type: "GET",
-                url: "http://localhost:8080/second/admin/listusers?offset=" + off + "&limit=" + lim,
+                url: "http://139.129.48.197:8080/second/admin/listusers?offset=" + off + "&limit=" + lim,
                 data: null,
                 async: true,
                 contentType: "charset=UTF-8",
@@ -87,7 +87,7 @@
             $.ajax({
                 cache: true,
                 type: "GET",
-                url: "http://localhost:8080/second/admin/user/delete?user=" + users[id - 1].userId,
+                url: "http://139.129.48.197:8080/second/admin/user/delete?user=" + users[id - 1].userId,
                 data: null,
                 async: true,
                 contentType: "charset=UTF-8",
@@ -128,7 +128,7 @@
                 var detail_link = document.createElement("a");
                 var name_text = document.createTextNode(model.userName);
                 detail_link.appendChild(name_text);
-                // a_node.setAttribute('href','http://localhost:8080/second/admin/user/delete?user='+model.userId);
+                // a_node.setAttribute('href','http://139.129.48.197:8080/second/admin/user/delete?user='+model.userId);
                 detail_link.setAttribute("onclick", 'viewDetail(' + (i + 1) + ')');
                 cell1.appendChild(detail_link);
 
@@ -151,7 +151,7 @@
                 var a_node = document.createElement("a");
                 var a_text = document.createTextNode("删除");
                 a_node.appendChild(a_text);
-                // a_node.setAttribute('href','http://localhost:8080/second/admin/user/delete?user='+model.userId);
+                // a_node.setAttribute('href','http://139.129.48.197:8080/second/admin/user/delete?user='+model.userId);
                 a_node.setAttribute("onclick", 'deleteUser(' + (i + 1) + ')');
                 cell7.appendChild(a_node);
                 $('#data-table tbody').append(row);
@@ -162,7 +162,7 @@
             var user_div = document.getElementById('users');
            // user_div.style.width = '550px';
             var user = users[index];
-            var url = "http://localhost:8080/second/admin/userDetail.html?" +user.userId;
+            var url = "http://139.129.48.197:8080/second/admin/userDetail.html?" +user.userId;
             //$('user-detail').load(url);
 
 //            $.ajax({

@@ -43,8 +43,12 @@
             $.ajax({
                 cache: true,
                 type: "GET",
-                url: "http://localhost:8080/second/commodity/commodities?order="+order+"&offset=" + off + "&limit=" + lim,
-                data: null,
+                url: "http://localhost:8080/second/commodity/commodities",
+                data: {
+                    "order":order,
+                    "offset":off,
+                    "limit":lim
+                },
                 async: true,
                 contentType: "charset=UTF-8",
                 dataType: "json",

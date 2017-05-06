@@ -49,11 +49,42 @@ public class UserController extends  BaseController {
     @Autowired
     private CommodityImageDao commodityImageDao;
 
-    @RequestMapping(path = "profile")
+    @RequestMapping(path = "index")
     public ModelAndView goToProfilePage() {
 
-        return new ModelAndView("profile",null);
+        System.out.println("user/index");
+
+        return new ModelAndView("user/index",null);
     }
+
+    @RequestMapping("orders")
+    public String orders(){
+        return "user/orders";
+    }
+
+    @RequestMapping("commodities")
+    public String commodities(){
+        return "user/commodities";
+    }
+
+    @RequestMapping("sell")
+    public String sell(){
+        return "user/sell";
+    }
+    @RequestMapping("cart")
+    public String cart(){
+        return "user/cart";
+    }
+
+    @RequestMapping("logout")
+    public String logout(HttpServletRequest request){
+
+        request.getSession().removeAttribute("userId");
+        request.getSession().removeAttribute("token");
+        request.getSession().removeAttribute("role");
+        return "redirect:login";
+    }
+
 
 
     /**
@@ -63,7 +94,7 @@ public class UserController extends  BaseController {
      * @return
      * @throws UserException
      */
-    @RequestMapping("")
+    @RequestMapping("profile")
     @ResponseBody
     public SuccessBean getUserInormationView(HttpServletRequest  request,
                                                 HttpServletResponse response)throws UserException{
@@ -72,8 +103,6 @@ public class UserController extends  BaseController {
         User user =  userDao.findById(userId);
        if (user == null)
            throw new UserException(USER_EXCEPTOIN_TYPE.USER_EXCEPTOIN_TYPE_USER_NOT_FOUND);
-        Map<String,User> model = new HashMap<String, User>();
-        model.put("user",user);
         return new SuccessBean(200,"信息获取成功",user,null);
     }
 
@@ -104,22 +133,31 @@ public class UserController extends  BaseController {
 
     /**
      * 修改基本信息，除了头像，手机号码，邮箱号码。这三个比较特殊，头像更新后要回调，手机号码和邮箱号码需要进行验证
-     * @param user
+     * @param userName
+     * @param origion
+     * @param gender
+     * @param birthdate
+     * @param address
      * @param request
      * @param response
      * @return
      */
     @RequestMapping(path = "update")
-    public SuccessBean updateUser(@RequestBody final User user,
-                                   HttpServletRequest request,
-                                   HttpServletResponse  response){
+    @ResponseBody
+    public SuccessBean updateUser(@RequestParam("userName") final String userName,
+                                  @RequestParam("origion") final String origion,
+                                  @RequestParam("gender") final String gender,
+                                  @RequestParam("birthdate") final String birthdate,
+                                  @RequestParam("address") final String address,
+                                  HttpServletRequest request,
+                                  HttpServletResponse  response){
 
        String userId = (String) request.getSession().getAttribute("userId");
        User user1 = userDao.findById(userId);
-       user1.setName(user.getName());
-       user1.setOrigion(user.getOrigion());
-       user1.setGender(user.getGender());
-       user1.setBirthday(user.getBirthday());
+       user1.setName(userName);
+       user1.setOrigion(origion);
+       user1.setGender(gender);
+       user1.setBirthday(birthdate);
        userDao.update(user1);
 
        return new SuccessBean(200,"信息修改成功",user1,null);
@@ -300,7 +338,7 @@ public class UserController extends  BaseController {
      * @return
      */
 
-    @RequestMapping("sold")
+    @RequestMapping("xr")
     @ResponseBody
     public SuccessBean commodities(@RequestParam("order") final int status,
                                    @RequestParam("offset") final int offset,

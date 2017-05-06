@@ -98,11 +98,11 @@
             });
         }
 
-        function regist() {
+        function registAction() {
             $.ajax({
                 cache: true,
                 type: "GET",
-                url: "http://localhost:8080/second/regist.html",
+                url: "http://localhost:8080/second/regist",
                 data: null,
                 async: true,
                 dataType: "html",
@@ -111,7 +111,7 @@
                     alert("error" + xmlhttpRequest.responseText);
                 },
                 success: function (data) {
-                    window.location.href = 'http://localhost:8080/second/regist.html';
+                    window.location.href = 'http://localhost:8080/second/regist';
                 }
             });
         }
@@ -149,7 +149,7 @@
                 </div>
                 <div class="form-group regist-div">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="button" class="btn btn-success regist-btn"id="regist" onclick="regist()">我要注册</button>
+                        <button type="button" class="btn btn-success regist-btn"id="regist" onclick="registAction()">我要注册</button>
                     </div>
                 </div>
             </form>
