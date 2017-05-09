@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>订单</title>
+
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!-- Google Fonts -->
+    <link href='https://fonts.googleapis.com/css?family=Titillium+Web:400,200,300,700,600' rel='stylesheet'
+          type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Roboto+Condensed:400,700,300' rel='stylesheet' type='text/css'>
+    <link href='https://fonts.googleapis.com/css?family=Raleway:400,100' rel='stylesheet' type='text/css'>
+
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/owl.carousel.css">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+
+
+    <![endif]-->
+
+
+</head>
+<body style="background-color: whitesmoke">
+
+<div class="header-area">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="user-menu">
+                    <ul>
+                        <li><a href="#"><i class="fa fa-user"></i> 个人中心</a></li>
+                        <li><a href="#"><i class="fa fa-heart"></i> 心愿单</a></li>
+                        <li><a href="cart.html"><i class="fa fa-user"></i> 我的购物车</a></li>
+                        <li><a href="checkout.html"><i class="fa fa-user"></i> 支付</a></li>
+                        <li><a href="#"><i class="fa fa-user"></i>登陆</a></li>
+                        <li><a href="#"><i class="fa fa-user"></i>退出系统</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container" id="order_ccontainer">
+    <div class="col-md-2">
+
+    </div>
+    <div class="col-md-12">
+        <div class="row">
+            <br/>
+            <br/>
+            <h3>订单结算</h3>
+            <br/>
+        </div>
+        <div style="border-bottom: solid;border-color: lightgrey;border-width: 1px; background-color: white"
+             class="order_list">
+            <div class="">
+                <br/>
+                <div class="col-md-3">
+                    <h4>收货人信息</h4>
+                </div>
+                <div >
+                    <h4 style="float: right;">
+                        <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+                            添加地址
+                        </button>
+                        <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                        <h4 class="modal-title" id="myModalLabel">模态框（Modal）标题</h4>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table ">
+                                        <tr><td><label class="control-label">收件人:</label><input type="text" id="user-name"/></td></tr>
+                                        <tr><td><label class="control-label">详细地址:</label><input type="text" id="user-address"/></td></tr>
+                                        <tr><td><label class="control-label">联系方式:</label><input type="text" id="user-contact"/></td></tr>
+                                    </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                                        <button type="button" class="btn btn-primary" onclick="saveAddress()">使用地址</button>
+                                    </div>
+                                </div><!-- /.modal-content -->
+                            </div><!-- /.modal-dialog -->
+                        </div>
+                    </h4>
+                </div>
+            </div>
+            <div>
+                <table class="table" id="address-table">
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div style="border-bottom: solid;border-color: lightgrey;border-width: 1px; background-color: white;"
+             class="order_list">
+            <div class="row">
+                <br/>
+                <div class="col-md-3">
+                    <h4>商品信息</h4>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-1"></div>
+                <div class="col-md-12">
+                    <br/>
+                    <div class="col-md-4">
+                        <h5>配送信息</h5>
+                        <table class="table" id="peisong">
+                            <tr>
+                                <td><label>配送: &nbsp; </label><input type="radio" name="delivery" onclick="selectedDelivery()" value="0"/>上门自取 &nbsp; <input type="radio" name="delivery" onclick="selectedDelivery()" value="1"/>卖家配送
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><label>支付: &nbsp; </label><input type="radio" name="payment" value="0" onclick="usubmit()"/>货到付款&nbsp; <input
+                                        type="radio" name="payment" onclick="usubmit()" value="1"/>在线支付</label></td>
+                            </tr>
+                            <tr>
+                                <td><label>有货</label></td>
+                            </tr>
+
+                        </table>
+                    </div>
+                    <div class="col-md-8">
+                        <h5>商品信息</h5>
+                        <table class="table">
+                            <tr>
+                                <td rowspan="3"><img src="http://img01.taopic.com/160117/318752-16011F9334648.jpg"
+                                                     style="width: 200px;height: 120px;"/></td>
+                            </tr>
+
+                            <tr>
+                                <td width="30%" style="text-align: center; vertical-align: middle!important;"><label><a id="commodity-title"><span id="commodity-title-content">sdkfhskdjfsdflskdjfldsjfls</span></a></label></td>
+                                <td width="15%" style="text-align: center;vertical-align: middle!important;"><label id="commodity-count">数量: x1</label></td>
+                                <td width="15%" style="text-align: center;vertical-align: middle!important;"><label id="commodity-price">价格: ¥199</label></td>
+                                <td width="10%" style="text-align: center;vertical-align: middle!important;"><label id="commodity-status">有货</label></td>
+                            </tr>
+
+                        </table>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div style="border: solid;border-color: lightgrey;border-width: 1px; background-color: lightgrey">
+            <div class="">
+                <br/>
+                <div class="col-md-3">
+                    <h4></h4>
+                </div>
+            </div>
+            <div>
+                <table class="table" style="border: none">
+                    <tr>
+                        <td><label class="label">应付金额：199</label></td>
+                    </tr>
+                    <tr>
+                        <td><label class="label">配送地址：<span id="order-address">上海市浦东新区唐镇顾唐路1699号 &nbsp; &nbsp; 蔡宏锋 &nbsp;
+                            &nbsp;13110518698</span></label></td>
+                    </tr>
+                    <tr>
+                        <td><label class="label">配送方式：<span id="order-delivery">卖家配送</span> </label></td>
+                    </tr>
+                    <tr>
+                        <td><label class="label">支付方式：<span id="order-payment">在线支付</span> </label></td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button class="btn btn-lg" style="background-color: #EE2C2C;color: white" onclick="submitOrder()">提交订单</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    var payment;
+    var delivery;
+    var name;
+    var contact;
+    var address;
+    var commodityId;
+
+    function usubmit() {
+
+        var radionum = document.getElementsByName("payment");
+        for (var i = 0; i < radionum.length; i++) {
+            if (radionum[i].checked) {
+                var delivery_input =   document.getElementById('order-payment');
+                delivery_input.innerHTML = radionum[i].value == 0 ?"在线支付":"货到付款";
+                payment = radionum[i].value;
+            }
+        }
+    }
+    function selectedDelivery() {
+
+        var radionum = document.getElementsByName("delivery");
+        for (var i = 0; i < radionum.length; i++) {
+            if (radionum[i].checked) {
+              var delivery_input =   document.getElementById('order-delivery');
+                delivery_input.innerHTML = radionum[i].value == 0 ?"上门自取":"送货上门";
+                delivery = radionum[i].value;
+            }
+        }
+
+    }
+    $(document).ready(function () {
+
+        hideItem();
+        commodityId = document.URL.split('?')[1].split('=')[1];
+
+        $.ajax({
+            cache: true,
+            type: "GET",
+            url: "http://localhost:8080/second/commodity/" +commodityId,
+            data: {
+            },
+            async: true,
+            contentType: "charset=UTF-8",
+            dataType: "json",
+            error: function (xmlhttpRequest) {
+                //这里对错误进行处理
+                var resp = xmlhttpRequest.responseText;
+                alert(resp);
+
+            },
+
+            success: function (data) {
+                var commodity = data.model;
+                document.getElementById('commodity-title').setAttribute("href","http://localhost:8080/second/shop/single-product?commodityId="+commodity.commodityid);
+                document.getElementById('commodity-title-content').innerText = commodity.title;
+                document.getElementById('commodity-price').innerText= '¥'+commodity.price;
+                document.getElementById('commodity-status').innerText = commodity.status;
+
+            }
+        });
+    });
+
+    function hideItem() {
+        $('.user-address').hide();
+    };
+    function showItem() {
+        $('.user-address').show();
+    };
+
+    function saveAddress() {
+
+       var na = $('#user-name').val();
+       var addr = $('#user-address').val();
+       var mobile = $('#user-contact').val();
+        showAddress(mobile,addr,na);
+        return false;
+    };
+
+   function selectAddress(obj){
+       var oaddress = document.getElementById('order-address');
+       oaddress.innerHTML = obj.parentNode.parentNode.childNodes[1].innerHTML;
+
+       var detail = obj.parentNode.parentNode.childNodes[1].innerHTML.split("&nbsp;");
+       name = detail[0];
+       address =detail[1];
+       contact = detail[2];
+   };
+
+
+    function showAddress(mobile,addrs,na) {
+
+        var index = document.getElementById('address-table').rows.length;
+        var tr = document.getElementById('address-table').insertRow(index);
+        tr.setAttribute("onmouseover","showItem()");
+        tr.setAttribute("onmouseout","hideItem()");
+        var cell = tr.insertCell(0);
+        var checkbox = document.createElement('input');
+        checkbox.setAttribute("type","radio");
+        checkbox.setAttribute("class","checkbox");
+        checkbox.setAttribute('name','check_address');
+        checkbox.setAttribute('onclick',"selectAddress(this)");
+        cell.append(checkbox);
+
+        var cell2 = tr.insertCell(1);
+        cell2.setAttribute("style",'margin-top: 10px');
+        cell2.innerHTML = na +'&nbsp'+addrs + '&nbsp' + mobile;
+
+        var cell3=  tr.insertCell(2);
+        cell3.setAttribute('class','user-address');
+        var  deleteLink = document.createElement('a');
+        deleteLink.setAttribute('onclick','deleteAddress(this)');
+        deleteLink.appendChild(document.createTextNode('删除'));
+        cell3.appendChild(deleteLink);
+        $('#myModal').modal('hide');
+    }
+
+    function deleteAddress(obj) {
+
+       var tr = obj.parentNode.parentNode;
+       var table = $('#address-table');
+       tr.remove();
+       return false;
+    }
+
+    function submitOrder() {
+        $(document).ready(function () {
+            $.ajax({
+                cache: true,
+                type: "POST",
+                url: "http://localhost:8080/second/order/add?"+"commodityId="+ commodityId
+                    +"&count=" + 1
+                    +"&payment=" +payment
+                    +"&delivery=" + delivery
+                    +"&name="+name
+                    +"&address="+address
+                    +"&contact="+contact,
+                data: {
+
+                },
+                async: true,
+                contentType: "charset=UTF-8",
+                dataType: "json",
+                error: function (xmlhttpRequest) {
+                    //这里对错误进行处理
+                    var resp = xmlhttpRequest.responseText;
+                    alert(resp);
+                },
+
+                success: function (data) {
+
+
+                }
+            });
+        });
+
+    }
+
+
+</script>
+
+</body>
+</html>

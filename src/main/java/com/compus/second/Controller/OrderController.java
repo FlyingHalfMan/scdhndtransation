@@ -92,7 +92,7 @@ public class OrderController extends BaseController {
      */
     @RequestMapping(path = "add",method = RequestMethod.POST)
     @ResponseBody
-    public SuccessBean  addNeworder(
+    public ModelAndView  addNeworder(
                                     @RequestParam("commodityId") final String commodityId,
                                     @RequestParam("count") final int count,
                                     @RequestParam("payment") final int payment,
@@ -136,7 +136,9 @@ public class OrderController extends BaseController {
         if (commodity.getCount() == 0)
             commodity.setStatus(Constant.COMMODITY_STATUS_SOLD_OUT);
         commodityDao.update(commodity);
-        return new SuccessBean(200,"订单创建成功",new OrderBean(order,commodity),null);
+
+        return new ModelAndView("redirect:order/success");
+       // return new SuccessBean(200,"订单创建成功",new OrderBean(order,commodity),null);
     }
 
 

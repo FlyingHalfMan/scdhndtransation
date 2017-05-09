@@ -40,7 +40,7 @@
             $.ajax({
                 cache: true,
                 type: "GET",
-                url: "http://139.129.48.197:8080/second/commodity/"+commodiyId,
+                url: "http://localhost:8080/second/commodity/"+commodiyId,
                 data: null,
                 async: true,
                 dataType: "json",
@@ -61,34 +61,13 @@
         });
 
         function buyNow() {
-            $.ajax({
-                cache: true,
-                type: "GET",
-                url: "http://139.129.48.197:8080/second/commodity/buy/"+commodiyId,
-                data: null,
-                async: true,
-                dataType: "json",
-                error:function (xmlhttpRequest) {
-                    alert(xmlhttpRequest.responseText);
-                },
-                success:function (data) {
-                    var commodity = data.model;
-                    var imageUrl = commodity.images == null ? null : commodity.images[0];
-                    $('#commodity_title').html(commodity.title);
-                    $('#commodity_price').html(commodity.price);
-                    $('#commodity_delivery').html(commodity.delivery);
-                    $('#commodity_status').html(commodity.status);
-                    $('#commodity_date').html(commodity.publishDate);
-                    $('#commodity_user').html(commodity.userName);
-                    $('#commodity_image').setAttribute("src",imageUrl);
-                }
-            });
+          window.location.href = "http://localhost:8080/second/shop/order.html?commodityId="+commodiyId;
         };
         function addCart() {
             $.ajax({
                 cache: true,
                 type: "GET",
-                url: "http://139.129.48.197:8080/second/cart/add",
+                url: "http://localhost:8080/second/cart/add",
                 data: {"commodityid":commodiyId},
                 async: true,
                 dataType: "json",
@@ -205,7 +184,7 @@
             <form action="" method="post">
                 <ul class="con_right">
                     <li class="title" id="commodity_title">神奇魔术变色杯</li>
-                    <li>促&nbsp;&nbsp;销&nbsp;&nbsp;价： <span class="txt1" id="commodity_price">￥50.00</li>
+                    <li>促&nbsp;&nbsp;销&nbsp;&nbsp;价： <span class="txt1" id="commodity_price">￥50.00</span></li>
                     <li>分类：<span>927&nbsp;条</span></li>
                     <li>配送方式：<span id="commodity_delivery"></span></li>
                     <li>支付方式：<span class="txt4" id="commodity_payment"></span></li>
