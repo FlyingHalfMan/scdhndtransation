@@ -210,7 +210,7 @@ public class UserController extends  BaseController {
         session.setAttribute("reset_mobile",mobile);
         session.setAttribute("reset_mobile_verifycode",verifycode);
         session.setAttribute("reset_mobile_verifycode_expired_date",Utils.getTimeWithDuration(5 *60 *1000));
-        SMSService.sendMobileResetVerifyCode(mobile,verifycode);
+        SMSService.sendResetPwdVerifyCode(mobile,verifycode);
 
         return new SuccessBean(200,"验证码已经发送到手机"+mobile);
     }
@@ -266,7 +266,7 @@ public class UserController extends  BaseController {
     @ResponseBody
     public SuccessBean verifyEmail(@PathVariable("email") final String email,
                                     HttpServletRequest request,
-                                    HttpServletResponse response){
+                                    HttpServletResponse response) throws ClientException {
 
         if(!Utils.isRightEmail(email))
             throw new InvalidException(403,"无效的邮箱");
@@ -338,7 +338,7 @@ public class UserController extends  BaseController {
      * @return
      */
 
-    @RequestMapping("xr")
+    @RequestMapping("sold")
     @ResponseBody
     public SuccessBean commodities(@RequestParam("order") final int status,
                                    @RequestParam("offset") final int offset,

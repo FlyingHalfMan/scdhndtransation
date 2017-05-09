@@ -53,9 +53,6 @@ public class CommodityController extends BaseController{
      * @param response
      * @return
      */
-
-
-
     @RequestMapping(value = "sell",method = RequestMethod.GET)
     public ModelAndView goToCommodityAddPage(HttpServletRequest request,
                                              HttpServletResponse response) {
@@ -87,7 +84,7 @@ public class CommodityController extends BaseController{
 
         // 获取session中的图片中的商品信息
         HttpSession session = request.getSession();
-        String key = (String) session.getAttribute("commodity");
+        String key = (String) session.getAttribute("userId");
         String imageName = ImageService.uploadImageToImageServer(image, key);
 
         //返回保存成功信息
@@ -109,16 +106,12 @@ public class CommodityController extends BaseController{
                                     @RequestParam("describe")   final String desc,
                                     @RequestParam("sortName")   final String sortName,
                                     @RequestParam("price")      final float price,
-                                    @RequestParam(value = "images",required = false)     final List<String> images,
+                                    @RequestParam("images")     final List<String> images,
                                     @RequestParam("numbers")    final int numbers) {
-        /**
-         * 用户上传数据的时候，先从session 中去获取commodityId 和已经上传的图片。
-         */
-        String commodityId = (String) request.getSession().getAttribute("commodity");
 
         // 检查商品的数据是否合理
         Commodity commodity = new Commodity();
-        commodity.setCommodityId(commodityId);                              // 设置商品的id
+        // 设置商品的id
         commodity.setCommodityId(EncryptUtil.randomString(16));
         commodity.setPrice(price);                                          // 设置商品的价格
         commodity.setTitle(title);                                          // 设置商品的标题
@@ -131,38 +124,23 @@ public class CommodityController extends BaseController{
         commodity.setSortName(sorts.getSortName());
         commodity.setSortId(sorts.getId());
         commodity.setPublishDate(new Date());                               // 设置商品发布时间
-        commodity.setStatus(Constant.COMMODITY_STATUS_ON_SALE);             // 设置商品的状态
+        commodity.setStatus(Constant.COMMODITY_STATUS_WAIT_CHECK);             // 设置商品的状态为等待审核
 
-        // 保存商品图片
-        HttpSession session  = request.getSession();
-        String image01 = (String) session.getAttribute("imageO1");
-        if (image01 != null && image01.length() > 1) {
-            CommodityImage commodityImage = new CommodityImage(commodityId,image01);
-            commodityImageDao.add(commodityImage);
+        if (images !=null && images.size() >= 1) {
+            for (String str : images) {
+                CommodityImage commodityImage = new CommodityImage(commodity.getCommodityId(), str);
+                commodityImageDao.add(commodityImage);
+            }
         }
-        String image02 = (String) session.getAttribute("imageO2");
 
-        if(image02 != null && image02.length() > 1) {
-            CommodityImage commodityImage = new CommodityImage(commodityId,image02);
-            commodityImageDao.add(commodityImage);
-        }
-        String image03 = (String) session.getAttribute("imageO3");
-
-        if(image03 != null && image03.length() > 1) {
-            CommodityImage commodityImage = new CommodityImage(commodityId,image03);
-            commodityImageDao.add(commodityImage);
-        }
 
         // 设置商品的用户信息
-        String userId = (String) session.getAttribute("userid");
+        String userId = (String) request.getSession().getAttribute("userid");
         commodity.setUserId(userId);
-
         // 保存到数据库
         commodityDao.add(commodity);
-
-        return new SuccessBean(200,"商品添加成功");
+        return new SuccessBean(200,"商品添加成功,等待管理员审核中");
     }
-
 
     /**
      * 获取某件商品的详细信息

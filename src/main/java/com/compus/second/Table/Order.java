@@ -4,6 +4,8 @@ import antlr.StringUtils;
 import com.compus.second.Bean.OrderBean;
 import com.compus.second.Constant;
 import com.compus.second.Utils.EncryptUtil;
+import com.compus.second.Utils.Utils;
+import com.sun.tools.internal.jxc.ap.Const;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
@@ -33,25 +35,27 @@ public class Order implements Serializable {
     private String  buyerId;
     private String  mobile;
     private String  email;
+    private String  name;
 
 
     public Order(){};
 
-    public Order(OrderBean orderBean,User user){
+    public Order(String commodityId,String title,int count,float price,String userId,int payment, int delivery,String address,String contact,String name){
 
-        this.commodityId    = orderBean.getCommodityId();
+        this.commodityId    = commodityId;
         this.orderId        = EncryptUtil.randomString();
-        this.orderDesc      = orderBean.getCommodityDesc();
-        this.numbers        = orderBean.getNumber();
-        this.price          = orderBean.getTotalPrice();
+        this.orderDesc      = title;
+        this.numbers        = count;
+        this.price          = price;
         this.orderDate      = new Date();
-        this.payment        = orderBean.getPaymentId();
-        this.delivery       = orderBean.getDeliveryId();
-        this.address        = orderBean.getAddress();
+        this.payment        =  payment;
+        this.delivery       = delivery;
+        this.address        = address;
         this.status         = Constant.ORDER_STATUS_WAIT_TO_PAY;
-        this.buyerId        = user.getUserId();
-        this.mobile         = user.getMobile();
-        this.email          = user.getEmail();
+        this.buyerId        = userId;
+        this.name           = name;
+       if (Utils.isRightEmail(contact)) this.email = contact;
+       else if(Utils.isRightMobile(contact)) this.mobile = contact;
     }
 
 
@@ -170,5 +174,13 @@ public class Order implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

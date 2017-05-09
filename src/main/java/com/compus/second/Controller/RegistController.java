@@ -220,7 +220,7 @@ public class RegistController extends BaseController {
         User user  = new User();
         if (Utils.isRightEmail(count))
             user.setEmail(count);
-        else if (Utils.isRightMobile(count));
+        else if (Utils.isRightMobile(count)) user.setMobile(count);
         user.setSalt(EncryptUtil.salt());
         user.setToken(EncryptUtil.encrypt(user.getSalt(),password));
         user.setName(userName);
@@ -235,7 +235,7 @@ public class RegistController extends BaseController {
         session.setAttribute("userName",user.getName());
         session.setAttribute("token",user.getToken());
         session.setAttribute("role",user.getAuth());
-        return new SuccessBean(200,"","http://localhost:8080/seond/index?uid="+user.getUserId()+"&toke="+user.getToken(),null);
+        return new SuccessBean(200,"","http://localhost:8080/second/shop/index?uid="+user.getUserId()+"&toke="+user.getToken(),null);
     }
 
 

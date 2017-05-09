@@ -16,6 +16,7 @@ public class Constant {
     public static final int COMMODITY_STATUS_ORDERED  = 2;      // 已经被下定
     public static final int COMMODITY_STATUS_SOLD     = 3;      // 已经出售
     public static final int COMMODITY_STATUS_SOLD_OUT = 4;      // 卖光了
+    public static final int COMMODITY_STATUS_WAIT_CHECK = 5;    // 等待商品审核中
 
     public static String getCommodityStatusById(int sortId){
 
@@ -23,6 +24,7 @@ public class Constant {
             case 1 : return "已经下架";
             case 2 : return "已经被下定";
             case 3 : return "已经售出";
+            case 5 : return "正在等待审核";
             default: return "正常出售";
         }
     }
@@ -38,9 +40,8 @@ public class Constant {
     public static String getPaymenntByPayId(int payId){
 
         switch (payId){
-            case 1 : return "线下交易";
-            case 2 : return "支持线上线下";
-            default: return "线上交易";
+            case 1 : return "货到付款";
+            default: return "在线支付";
         }
     }
 
@@ -56,7 +57,6 @@ public class Constant {
 
         switch (deliveryId){
             case 1 : return "卖家配送";
-            case 2 : return "买家自取或上门自取";
             default: return "买家自取";
         }
     }

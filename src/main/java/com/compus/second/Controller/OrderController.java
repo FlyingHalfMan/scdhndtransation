@@ -39,6 +39,12 @@ public class OrderController extends BaseController {
     @Autowired
     private UserDao userDao;
 
+
+    @RequestMapping("order")
+    public ModelAndView order(){
+        return new ModelAndView("/shop/order",null);
+    }
+
     @RequestMapping(path = "orders")
     public ModelAndView gotOrderPage(){
         return new ModelAndView("orders",null);
@@ -81,17 +87,23 @@ public class OrderController extends BaseController {
 
     /**
      *  创建新的订单
-     * @param orderBean
      * @param userId
      * @return
      */
     @RequestMapping(path = "add",method = RequestMethod.POST)
     @ResponseBody
-    public SuccessBean  addNeworder(@RequestBody OrderBean orderBean,
-                                    @SessionAttribute("userid") final String userId){
+    public SuccessBean  addNeworder(
+                                    @RequestParam("commodityId") final String commodityId,
+                                    @RequestParam("count") final int count,
+                                    @RequestParam("payment") final int payment,
+                                    @RequestParam("delivery") final int delivery,
+                                    @RequestParam("name") final String name,
+                                    @RequestParam("address") final String address,
+                                    @RequestParam("contact") final String contact,
+                                    @SessionAttribute("userId") final String userId){
 
         // 1.先检查商品的状态是不是有效
-        Commodity commodity = commodityDao.findByCommodityId(orderBean.getCommodityId());
+        Commodity commodity = commodityDao.findByCommodityId(commodityId);
 
         if (commodity == null)
             throw new OrderException(ORDER_EXCEPTION_TYPE.ORDER_EXCEPTION_COMMODITY_NOT_FOUND);
@@ -102,11 +114,20 @@ public class OrderController extends BaseController {
         if (commodity.getStatus() == Constant.COMMODITY_STATUS_SOLD_OUT)
             throw new OrderException(ORDER_EXCEPTION_TYPE.ORDER_EXCEPTION_COMMODITY_SALD);
         // 商品数量不足
-        if (commodity.getCount() < orderBean.getNumber())
+        if (commodity.getCount() < count)
             throw new OrderException(ORDER_EXCEPTION_TYPE.ORDER_EXCEPTION_COMMODITY_NOTENOUGH);
 
         User user =  userDao.findById(userId);
-        Order order  = new Order(orderBean,user);
+        Order order  = new Order(commodityId,
+                                 commodity.getTitle(),
+                                 count,
+                           commodity.getPrice() *count,
+                                 userId,
+                                 payment,
+                                 delivery,
+                                 address,
+                                 contact,
+                                 name);
         // 添加数据库
         orderDao.addOrder(order);
 

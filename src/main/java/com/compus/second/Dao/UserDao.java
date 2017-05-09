@@ -64,7 +64,7 @@ public class UserDao {
 
     public List<User> findUserByUserName(String name){
 
-        String sql = "select u from User as u where u.name = :name";
+        String sql = "select u from User as u where u.name =:name";
         Query query = entityManager.createQuery(sql).setParameter("name",name);
         return query.getResultList() == null || query.getResultList().size() < 1 ? null :query.getResultList();
     }

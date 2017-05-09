@@ -83,7 +83,6 @@
 
 
         function deleteUser(id) {
-            alert(id);
             $.ajax({
                 cache: true,
                 type: "GET",
@@ -95,11 +94,9 @@
                 error: function (xmlhttpRequest) {
                     //这里对错误进行处理
                     var resp = xmlhttpRequest.responseText;
-                    alert(resp);
-
+                    alert("error" + resp);
                 },
                 success: function (data) {
-                    alert(data.msg);
                     users.splice(id - 1, 1);
                     updateTableView(users);
                 }

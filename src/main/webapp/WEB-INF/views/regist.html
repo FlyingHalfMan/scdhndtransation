@@ -131,7 +131,7 @@
             $.ajax({
                 cache: true,
                 type: "POST",
-                url: "http://139.129.48.197:8080/second/regist/verify",
+                url: "http://localhost:8080/second/regist/verify",
                 data: {
                     "count": $("#count").val(),
                     "verifycode": $("#verifycode").val(),
@@ -149,7 +149,7 @@
                 success: function (data) {
                     alert("登录成功");
 //                       $("body").html(data);
-                    window.location.href = data.msg;
+                    window.location.href = data.model;
                 }
             });
         });
@@ -207,7 +207,7 @@
                     dataType: "json",
                     error: function (xmlhttpRequest) {
                         //这里对错误进行处理
-                        var resp = $.parseJSON(xmlhttpRequest.responseText);
+                            var resp = $.parseJSON(xmlhttpRequest.responseText);
                         alert("error" +resp.msg);
                     },
                     success: function (data) {

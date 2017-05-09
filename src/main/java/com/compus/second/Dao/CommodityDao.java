@@ -75,6 +75,14 @@ public class CommodityDao {
         return query.getResultList() == null || query.getResultList().size() < 1 ?null : (Commodity) query.getResultList().get(0);
     }
 
+
+    public List<Commodity> listUncheckedCommodities(int status){
+
+        String sql = "select  c from Commodity  as c where c.status = :id";
+        Query query = entityManager.createQuery(sql).setParameter("id",status);
+        return query.getResultList() == null || query.getResultList().size() < 1 ? null : query.getResultList();
+    }
+
     /**
      *
      * @param commodity
@@ -98,7 +106,7 @@ public class CommodityDao {
         Commodity c = findByCommodityId(commodity.getCommodityId());
         if (c == null) throw  new CommodityException(COMMODITY_EXCEPTION_TYPE.COMMODITY_EXCEPTION_TYPE_DELETEFAILED);
         c = commodity;
-        entityManager.persist(c);
+        entityManager.merge(c);
     }
 
 

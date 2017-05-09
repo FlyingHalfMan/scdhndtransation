@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
  * Created by cai on 2017/3/18.
@@ -46,6 +47,8 @@ public class AdminController extends BaseController {
 
     @Autowired
     OrderDao orderDao;
+
+    @Autowired
 
     /**
      *  管理员主页
@@ -123,6 +126,36 @@ public class AdminController extends BaseController {
         userDao.delete(user);
         return new SuccessBean(200,"删除成功");
     }
+
+    @RequestMapping("check")
+    public ModelAndView check(){
+        return new ModelAndView("/admin/check");
+    }
+
+    @RequestMapping("check/commodities")
+    @ResponseBody
+    public SuccessBean checkCommodities(){
+
+      List<Commodity> commodities = commodityDao.listUncheckedCommodities(Constant.COMMODITY_STATUS_WAIT_CHECK);
+      if (commodities == null)
+          return new SuccessBean(404,"暂时没有等待审核的商品");
+      List<CommodityBean> commodityBeans =  new ArrayList<CommodityBean>();
+      for (Commodity commodity : commodities){
+         CommodityBean bean = parseCommodityBean(commodity);
+         commodityBeans.add(bean);
+      }
+      return new SuccessBean(200,"数据获取成功",null,commodityBeans);
+    }
+
+    private CommodityBean parseCommodityBean(Commodity commodity){
+
+        List<String> images = commodityImageDao.findByCommodity(commodity.getCommodityId());
+        User user = userDao.findById(commodity.getUserId());
+        CommodityBean commodityBean = new CommodityBean(commodity,images,user);
+        return commodityBean;
+    }
+
+
 
 }
 

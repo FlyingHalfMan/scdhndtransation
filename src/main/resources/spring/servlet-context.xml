@@ -40,7 +40,7 @@
     <mvc:resources mapping="/shop/js/**.js" location="WEB-INF/views/shop/js/"/>
     <mvc:resources mapping="/shop/img/**.jpg" location="WEB-INF/views/shop/img/"/>
     <mvc:resources mapping="/shop/img/**.png" location="WEB-INF/views/shop/img/"/>
-    <!--<mvc:resources mapping="/shop/**.html" location="WEB-INF/views/shop/"/>-->
+    <mvc:resources mapping="/shop/**.html" location="WEB-INF/views/shop/"/>
     <mvc:resources mapping="/shop/**.css" location="WEB-INF/views/shop/"/>
     <mvc:resources mapping="/shop/images/**.jpg" location="WEB-INF/views/shop/images/"/>
     <mvc:resources mapping="/shop/images/**.png" location="WEB-INF/views/shop/images/"/>

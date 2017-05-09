@@ -41,6 +41,13 @@ public class CartController extends BaseController {
      * 购物车 1。查看购物车 2。添加购物车 3。删除购物车 4。修改购物车
      */
 
+
+
+    @RequestMapping(path = "cart",method = RequestMethod.GET)
+    public String  cart(){
+        return "cart";
+    }
+
     /**
      * 查看用户的购物车
      * @param offset
@@ -49,12 +56,6 @@ public class CartController extends BaseController {
      * @param response
      * @return
      */
-
-    @RequestMapping(path = "cart",method = RequestMethod.GET)
-    public String  cart(){
-        return "cart";
-    }
-
     @RequestMapping(path = "cart/list",method = RequestMethod.GET)
     @ResponseBody
     public SuccessBean listCart(@RequestParam("offset") final int offset,
@@ -85,7 +86,7 @@ public class CartController extends BaseController {
      * @return
      */
 
-    @RequestMapping("add")
+    @RequestMapping("cart/add")
     @ResponseBody
     public SuccessBean  addCart(@RequestParam("commodityid") final  String commodityId,
                                  HttpServletRequest request,
@@ -124,7 +125,7 @@ public class CartController extends BaseController {
      * @return
      */
 
-    @RequestMapping("/delete")
+    @RequestMapping("cart/delete")
     @ResponseBody
     public SuccessBean deleteCart(@RequestParam("commodityId") final String commodityId,
                                    HttpServletRequest request,
@@ -151,7 +152,7 @@ public class CartController extends BaseController {
      * @param response
      * @return
      */
-    @RequestMapping("delete/all")
+    @RequestMapping("cart/delete/all")
     public ModelAndView deleteAllCart(HttpServletRequest request,
                                      HttpServletResponse response){
 
@@ -174,5 +175,9 @@ public class CartController extends BaseController {
         return new ModelAndView("",null);
     }
 
+    @RequestMapping(path = "addSuccess")
+    public String addSuccess(){
+        return "addSuccess";
+    }
 
 }
